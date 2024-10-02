@@ -1,0 +1,26 @@
+package com.dbms.WelZoneApp.service;
+
+import com.dbms.WelZoneApp.model.ChatMessage;
+import com.dbms.WelZoneApp.repository.ChatMessageRepository;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class ChatMessageService {
+
+    private final ChatMessageRepository chatMessageRepository;
+
+    public ChatMessageService(ChatMessageRepository chatMessageRepository) {
+        this.chatMessageRepository = chatMessageRepository;
+    }
+
+    // Save chat message
+    public void saveChatMessage(ChatMessage chatMessage) {
+        chatMessageRepository.save(chatMessage);
+    }
+
+    // Retrieve messages by session (slot)
+    public List<ChatMessage> getMessagesBySessionId(Long sessionId) {
+        return chatMessageRepository.getBySessionId(sessionId);
+    }
+}
