@@ -2,34 +2,35 @@ package com.dbms.WelZoneApp.service;
 
 import com.dbms.WelZoneApp.model.Feedback;
 import com.dbms.WelZoneApp.repository.FeedbackRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class FeedbackService {
+    private final FeedbackRepository feedbackRepository;
 
-    @Autowired
-    private FeedbackRepository feedbackRepository;
-
-    // Create feedback
-    public void createFeedback(Feedback feedback) {
-        feedbackRepository.createFeedback(feedback);
+    public FeedbackService(FeedbackRepository feedbackRepository) {
+        this.feedbackRepository = feedbackRepository;
     }
 
-    // Find feedback by ID
-    public Feedback findFeedbackById(Long id) {
-        return feedbackRepository.findFeedbackById(id);
+    public List<Feedback> getAllFeedback() {
+        return feedbackRepository.findAll();
     }
 
-    // Find feedback by user ID
-    public List<Feedback> findFeedbackByUserId(Long userId) {
-        return feedbackRepository.findFeedbackByUserId(userId);
+    public Feedback getFeedbackById(Long feedbackId) {
+        return feedbackRepository.findById(feedbackId);
     }
 
-    // Find feedback by counselor ID
-    public List<Feedback> findFeedbackByCounselorId(Long counselorId) {
-        return feedbackRepository.findFeedbackByCounselorId(counselorId);
+    public void addFeedback(Feedback feedback) {
+        feedbackRepository.save(feedback);
+    }
+
+    public void updateFeedback(Feedback feedback) {
+        feedbackRepository.update(feedback);
+    }
+
+    public void deleteFeedback(Long feedbackId) {
+        feedbackRepository.delete(feedbackId);
     }
 }
