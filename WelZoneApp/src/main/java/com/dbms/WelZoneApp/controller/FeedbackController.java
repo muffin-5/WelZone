@@ -2,8 +2,6 @@ package com.dbms.WelZoneApp.controller;
 
 import com.dbms.WelZoneApp.model.Feedback;
 import com.dbms.WelZoneApp.service.FeedbackService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,33 +9,35 @@ import java.util.List;
 @RestController
 @RequestMapping("/feedback")
 public class FeedbackController {
+    private final FeedbackService feedbackService;
 
-    @Autowired
-    private FeedbackService feedbackService;
-
-    // Create new feedback
-    @PostMapping("/create")
-    public ResponseEntity<String> createFeedback(@RequestBody Feedback feedback) {
-        feedbackService.createFeedback(feedback);
-        return ResponseEntity.ok("Feedback submitted successfully.");
+    public FeedbackController(FeedbackService feedbackService) {
+        this.feedbackService = feedbackService;
     }
 
-    // Get feedback by ID
+    @GetMapping
+    public List<Feedback> getAllFeedback() {
+        return feedbackService.getAllFeedback();
+    }
+
     @GetMapping("/{id}")
-    public Feedback getFeedbackById(@PathVariable Long id) {
-        return feedbackService.findFeedbackById(id);
+    public Feedback getFeedbackById(@PathVariable("id") Long feedbackId) {
+        return feedbackService.getFeedbackById(feedbackId);
     }
 
-    // Get feedback by user ID
-    @GetMapping("/user/{userId}")
-    public List<Feedback> getFeedbackByUserId(@PathVariable Long userId) {
-        return feedbackService.findFeedbackByUserId(userId);
+    @PostMapping
+    public void addFeedback(@RequestBody Feedback feedback) {
+        feedbackService.addFeedback(feedback);
     }
 
-    // Get feedback by counselor ID
-    @GetMapping("/counselor/{counselorId}")
-    public List<Feedback> getFeedbackByCounselorId(@PathVariable Long counselorId) {
-        return feedbackService.findFeedbackByCounselorId(counselorId);
+    @PutMapping("/{id}")
+    public void updateFeedback(@PathVariable("id") Long feedbackId, @RequestBody Feedback feedback) {
+        feedback.setFeedbackId(feedbackId);
+        feedbackService.updateFeedback(feedback);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteFeedback(@PathVariable("id") Long feedbackId) {
+        feedbackService.deleteFeedback(feedbackId);
     }
 }
-

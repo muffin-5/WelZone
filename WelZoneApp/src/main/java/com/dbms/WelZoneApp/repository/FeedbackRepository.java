@@ -1,60 +1,59 @@
 package com.dbms.WelZoneApp.repository;
 
 import com.dbms.WelZoneApp.model.Feedback;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
 public class FeedbackRepository {
+    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    // SQL queries
-    private static final String INSERT_FEEDBACK_SQL = "INSERT INTO feedback (user_id, counselor_id, slot_id, rating, comment) VALUES (?, ?, ?, ?, ?)";
-    private static final String FIND_FEEDBACK_BY_ID_SQL = "SELECT * FROM feedback WHERE id = ?";
-    private static final String FIND_FEEDBACK_BY_USER_SQL = "SELECT * FROM feedback WHERE user_id = ?";
-    private static final String FIND_FEEDBACK_BY_COUNSELOR_SQL = "SELECT * FROM feedback WHERE counselor_id = ?";
-
-    // Method to create feedback
-    public void createFeedback(Feedback feedback) {
-        jdbcTemplate.update(INSERT_FEEDBACK_SQL, feedback.getUserId(), feedback.getCounselorId(), feedback.getSlotId(), feedback.getRating(), feedback.getComment());
+    public FeedbackRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Method to find feedback by ID
-    public Feedback findFeedbackById(Long id) {
-        return jdbcTemplate.queryForObject(FIND_FEEDBACK_BY_ID_SQL, new Object[]{id}, new FeedbackRowMapper());
-    }
-
-    // Method to find feedback by user ID
-    public List<Feedback> findFeedbackByUserId(Long userId) {
-        return jdbcTemplate.query(FIND_FEEDBACK_BY_USER_SQL, new Object[]{userId}, new FeedbackRowMapper());
-    }
-
-    // Method to find feedback by counselor ID
-    public List<Feedback> findFeedbackByCounselorId(Long counselorId) {
-        return jdbcTemplate.query(FIND_FEEDBACK_BY_COUNSELOR_SQL, new Object[]{counselorId}, new FeedbackRowMapper());
-    }
-
-    // RowMapper for Feedback model
-    private static class FeedbackRowMapper implements RowMapper<Feedback> {
-        @Override
-        public Feedback mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public List<Feedback> findAll() {
+        String sql = "SELECT * FROM feedback";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Feedback feedback = new Feedback();
-            feedback.setId(rs.getLong("id"));
-            feedback.setUserId(rs.getLong("user_id"));
-            feedback.setCounselorId(rs.getLong("counselor_id"));
-            feedback.setSlotId(rs.getLong("slot_id"));
+            feedback.setFeedbackId(rs.getLong("feedbackId"));
+            feedback.setSessionId(rs.getLong("sessionId"));
             feedback.setRating(rs.getInt("rating"));
-            feedback.setComment(rs.getString("comment"));
+            feedback.setComments(rs.getString("comments"));
+            feedback.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+            feedback.setUpdatedAt(rs.getTimestamp("updatedAt").toLocalDateTime());
             return feedback;
-        }
+        });
+    }
+
+    public Feedback findById(Long feedbackId) {
+        String sql = "SELECT * FROM feedback WHERE feedbackId = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{feedbackId}, (rs, rowNum) -> {
+            Feedback feedback = new Feedback();
+            feedback.setFeedbackId(rs.getLong("feedbackId"));
+            feedback.setSessionId(rs.getLong("sessionId"));
+            feedback.setRating(rs.getInt("rating"));
+            feedback.setComments(rs.getString("comments"));
+            feedback.setCreatedAt(rs.getTimestamp("createdAt").toLocalDateTime());
+            feedback.setUpdatedAt(rs.getTimestamp("updatedAt").toLocalDateTime());
+            return feedback;
+        });
+    }
+
+    public void save(Feedback feedback) {
+        String sql = "INSERT INTO feedback (sessionId, rating, comments, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, feedback.getSessionId(), feedback.getRating(), feedback.getComments(), feedback.getCreatedAt(), feedback.getUpdatedAt());
+    }
+
+    public void update(Feedback feedback) {
+        String sql = "UPDATE feedback SET sessionId = ?, rating = ?, comments = ?, updatedAt = ? WHERE feedbackId = ?";
+        jdbcTemplate.update(sql, feedback.getSessionId(), feedback.getRating(), feedback.getComments(), feedback.getUpdatedAt(), feedback.getFeedbackId());
+    }
+
+    public void delete(Long feedbackId) {
+        String sql = "DELETE FROM feedback WHERE feedbackId = ?";
+        jdbcTemplate.update(sql, feedbackId);
     }
 }
-
