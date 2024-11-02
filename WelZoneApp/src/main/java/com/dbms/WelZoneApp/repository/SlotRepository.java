@@ -23,6 +23,8 @@ public class SlotRepository {
     private static final String FIND_AVAILABLE_SLOTS_SQL = "SELECT * FROM slots WHERE counselor_id = ? AND booked = false";
     private static final String BOOK_SLOT_SQL = "UPDATE slots SET user_id = ?, booked = true WHERE id = ? AND booked = false";
     private static final String CANCEL_SLOT_SQL = "UPDATE slots SET user_id = NULL, booked = false WHERE id = ?";
+    private static final String FIND_BOOKED_SLOTS_WITH_END_TIME_SQL =
+            "SELECT * FROM slots WHERE counselor_id = ? AND booked = true AND end_time > ?";
 
     // Method to create a slot
     public void createSlot(Slot slot) {
@@ -49,6 +51,16 @@ public class SlotRepository {
         return jdbcTemplate.update(CANCEL_SLOT_SQL, slotId);
     }
 
+
+    // Method to find booked slots for a counselor with end_time greater than the current time
+    public List<Slot> findBookedSlotsWithEndTime(Long counselorId, LocalDateTime currentTime) {
+        return jdbcTemplate.query(
+                FIND_BOOKED_SLOTS_WITH_END_TIME_SQL,
+                new Object[]{counselorId, currentTime},
+                new SlotRowMapper()
+        );
+    }
+
     // RowMapper for Slot model
     private static class SlotRowMapper implements RowMapper<Slot> {
         @Override
@@ -64,4 +76,3 @@ public class SlotRepository {
         }
     }
 }
-

@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const convertArrayToDate = (dateArray) => {
+  const [year, month, day, hour, minute] = dateArray;
+  // Note: JavaScript Date months are zero-indexed, so we subtract 1 from the month
+  return new Date(year, month - 1, day, hour, minute);
+};
+
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
   const [error, setError] = useState("");
@@ -32,7 +38,8 @@ const Blog = () => {
               <h2 className="text-xl font-semibold mb-2">{blog.title}</h2>
               <p className="text-gray-700 mb-4">{blog.content}</p>
               <p className="text-gray-500 text-sm">
-                Posted on {new Date(blog.createdAt).toLocaleDateString()}
+                Posted on{" "}
+                {convertArrayToDate(blog.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>

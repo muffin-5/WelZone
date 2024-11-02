@@ -24,6 +24,12 @@ public class CounselorRepository {
                 counselor.getRating(), counselor.getCreatedAt(), counselor.getUpdatedAt());
     }
 
+    public Counselor findByUsername(String username) {
+        String sql = "SELECT * FROM counselors WHERE username = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{username}, this::mapRowToCounselor);
+    }
+
+
     public List<Counselor> findAll() {
         String sql = "SELECT * FROM counselors";
         return jdbcTemplate.query(sql, this::mapRowToCounselor);
@@ -46,6 +52,13 @@ public class CounselorRepository {
         jdbcTemplate.update(sql, counselorId);
     }
 
+    // Method to verify counselor credentials
+    public boolean verifyCounselorCredentials(String username, String password) {
+        String sql = "SELECT COUNT(*) FROM counselors WHERE username = ? AND password = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
+        return count != null && count > 0;
+    }
+
     private Counselor mapRowToCounselor(ResultSet rs, int rowNum) throws SQLException {
         return new Counselor(
                 rs.getLong("counselor_id"),
@@ -53,13 +66,13 @@ public class CounselorRepository {
                 rs.getString("password"),
                 rs.getString("email"),
                 rs.getString("phone"),
-                rs.getDate("date_of_birth"),
+                rs.getDate("date_of_birth").toLocalDate().atStartOfDay(),
                 rs.getString("specialization"),
                 rs.getString("qualification"),
                 rs.getInt("experience"),
                 rs.getDouble("rating"),
-                rs.getDate("created_at"),
-                rs.getDate("updated_at")
+                rs.getTimestamp("created_at").toLocalDateTime(),
+                rs.getTimestamp("updated_at").toLocalDateTime()
         );
     }
 }

@@ -4,7 +4,7 @@ import { FaComment, FaBook, FaCalendarAlt, FaChartLine } from "react-icons/fa";
 import MoodTracker from "./MoodTracker";
 import SessionBooking from "./SessionBooking";
 
-const Dashboard = () => {
+const DashboardUser = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="container mx-auto p-8">
@@ -38,6 +38,13 @@ const Dashboard = () => {
             icon={<FaChartLine className="text-4xl mb-4" />}
             link="/progress"
             color="bg-yellow-500"
+            hoverColor="bg-yellow-600"
+          />
+          <DashboardCard
+            title="Courses"
+            icon={<FaChartLine className="text-4xl mb-4" />}
+            link="/courses"
+            color="bg-red-500"
             hoverColor="bg-yellow-600"
           />
         </div>
@@ -74,4 +81,4 @@ const DashboardCard = ({ title, icon, link, color, hoverColor }) => {
   );
 };
 
-export default Dashboard;
+export default DashboardUser;

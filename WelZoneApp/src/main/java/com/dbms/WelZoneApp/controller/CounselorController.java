@@ -5,7 +5,9 @@ import com.dbms.WelZoneApp.service.CounselorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/counselors")
@@ -45,4 +47,23 @@ public class CounselorController {
         counselorService.deleteCounselor(counselorId);
         return ResponseEntity.noContent().build();
     }
+
+    // Login counselor
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> loginCounselor(@RequestBody Counselor loginCounselor) {
+        boolean isAuthenticated = counselorService.authenticateCounselor(loginCounselor.getUsername(), loginCounselor.getPassword());
+
+        if (isAuthenticated) {
+            Counselor counselor = counselorService.getCounselorByUsername(loginCounselor.getUsername());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Counselor logged in successfully!");
+            response.put("counselorId", counselor.getCounselorId()); // Assuming you have a getCounselorId method
+
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
+        }
+    }
+
 }

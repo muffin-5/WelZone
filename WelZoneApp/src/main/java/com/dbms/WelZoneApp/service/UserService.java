@@ -22,6 +22,11 @@ public class UserService {
         userRepository.saveUser(user);
     }
 
+    // Authenticate user
+    public boolean authenticateUser(String username, String password) {
+        return userRepository.verifyUserCredentials(username, password);
+    }
+
     // Find user by username
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username);

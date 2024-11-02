@@ -47,6 +47,13 @@ public class UserRepository {
         return jdbcTemplate.query(sql, this::mapRowToUser);
     }
 
+    // Method to verify user credentials
+    public boolean verifyUserCredentials(String username, String password) {
+        String sql = "SELECT COUNT(*) FROM users WHERE username = ? AND password = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
+        return count != null && count > 0;
+    }
+
     private User mapRowToUser(ResultSet rs, int rowNum) throws SQLException {
         return new User(
                 rs.getLong("id"),

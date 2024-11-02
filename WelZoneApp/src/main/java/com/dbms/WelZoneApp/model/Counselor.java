@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -15,11 +16,11 @@ public class Counselor {
     private String password;
     private String email;
     private String phone;
-    private Date dateOfBirth;
+    private LocalDateTime dateOfBirth;
     private String specialization;
     private String qualification;
     private int experience; // in years
     private double rating; // for example out of 5
-    private Date createdAt;
-    private Date updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

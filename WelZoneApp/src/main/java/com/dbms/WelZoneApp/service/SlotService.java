@@ -5,6 +5,7 @@ import com.dbms.WelZoneApp.repository.SlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,6 +27,10 @@ public class SlotService {
     // Find available slots for a counselor
     public List<Slot> findAvailableSlots(Long counselorId) {
         return slotRepository.findAvailableSlots(counselorId);
+    }
+
+    public List<Slot> getBookedSlotsWithEndTime(Long counselorId, LocalDateTime currentTime) {
+        return slotRepository.findBookedSlotsWithEndTime(counselorId, currentTime);
     }
 
     // Book a slot

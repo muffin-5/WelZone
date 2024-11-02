@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -36,6 +38,19 @@ public class SlotController {
             return ResponseEntity.ok("Slot booked successfully.");
         } else {
             return ResponseEntity.badRequest().body("Slot booking failed.");
+        }
+    }
+
+    // New API to get booked slots for a counselor with date >= today
+    @GetMapping("/booked/{counselorId}")
+    public ResponseEntity<List<Slot>> getUpcomingBookedSlots(@PathVariable Long counselorId) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        List<Slot> upcomingSlots = slotService.getBookedSlotsWithEndTime(counselorId, currentTime);
+
+        if (upcomingSlots.isEmpty()) {
+            return ResponseEntity.noContent().build(); // No slots found
+        } else {
+            return ResponseEntity.ok(upcomingSlots);
         }
     }
 
