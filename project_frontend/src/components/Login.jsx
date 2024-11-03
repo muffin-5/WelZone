@@ -39,6 +39,7 @@ const Login = () => {
         // Assuming responseData contains counselorId for counselors
         localStorage.setItem("Id", responseData.counselorId); // Store the counselor ID
       }
+      localStorage.setItem("isAuthenticated", "true");
 
       // Redirect based on user type
       if (userType === "user") {

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import DashboardUser from "./components/DashboardUser";
-import DashboardCounsellor from "./components/DashboardCounsellor";
+import DashboardCounselor from "./components/DashboardCounselor";
 import Chat from "./components/Chat";
 import Login from "./components/Login";
 import Blog from "./components/Blog";
@@ -12,6 +12,10 @@ import CoursesPage from "./components/CoursesPage"; // Import the CoursesPage co
 import Register from "./components/Register";
 import UserRegistration from "./components/UserRegistration";
 import CounselorRegistration from "./components/CounselorRegistration";
+import CounselorSessions from "./components/CounselorSessions";
+import AddSlot from "./components/AddSlot";
+import BookSession from "./components/BookSession";
+import MoodProgress from "./components/UserProgress";
 
 function App() {
   return (
@@ -29,15 +33,17 @@ function App() {
           />
 
           <Route path="/dashboarduser" element={<DashboardUser />} />
-          <Route
-            path="/dashboardcounsellor"
-            element={<DashboardCounsellor />}
-          />
+          <Route path="/dashboardcounsellor" element={<DashboardCounselor />} />
+          <Route path="/counselor/sessions" element={<CounselorSessions />} />
+          <Route path="/counselor/add-slot" element={<AddSlot />} />
+          <Route path="/progress" element={<MoodProgress />} />
 
           <Route path="/chat" element={<Chat />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blogbyme" element={<BlogbyCounselor />} />
           <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/book-session" element={<BookSession />} />
+
           <Route path="/login/user" element={<Login userType="user" />} />
           <Route
             path="/login/counselor"

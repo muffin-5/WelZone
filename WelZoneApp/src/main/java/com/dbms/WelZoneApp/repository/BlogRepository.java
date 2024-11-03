@@ -18,14 +18,14 @@ public class BlogRepository {
     private JdbcTemplate jdbcTemplate;
 
     // SQL queries
-    private static final String INSERT_BLOG_POST_SQL = "INSERT INTO blog_posts (counselor_id, title, content, created_at) VALUES (?, ?, ?, ?)";
+    private static final String INSERT_BLOG_POST_SQL = "INSERT INTO blog_posts (counselor_id, title, content) VALUES (?, ?, ?)";
     private static final String FIND_BLOG_POST_BY_ID_SQL = "SELECT * FROM blog_posts WHERE id = ?";
     private static final String FIND_ALL_BLOG_POSTS_SQL = "SELECT * FROM blog_posts";
     private static final String FIND_BLOG_POSTS_BY_COUNSELOR_SQL = "SELECT * FROM blog_posts WHERE counselor_id = ?";
 
     // Method to create a blog post
     public void createBlogPost(BlogPost blogPost) {
-        jdbcTemplate.update(INSERT_BLOG_POST_SQL, blogPost.getCounselorId(), blogPost.getTitle(), blogPost.getContent(), blogPost.getCreatedAt());
+        jdbcTemplate.update(INSERT_BLOG_POST_SQL, blogPost.getCounselorId(), blogPost.getTitle(), blogPost.getContent());
     }
 
     // Method to find a blog post by ID

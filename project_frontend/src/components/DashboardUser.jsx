@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaComment, FaBook, FaCalendarAlt, FaChartLine } from "react-icons/fa";
 import MoodTracker from "./MoodTracker";
-import SessionBooking from "./SessionBooking";
+import AffirmationDisplay from "./AffirmationDisplay";
 
 const DashboardUser = () => {
   return (
@@ -57,9 +57,9 @@ const DashboardUser = () => {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold mb-4 text-indigo-700">
-              Quick Session Booking
+              Today's Affirmation
             </h3>
-            <SessionBooking />
+            <AffirmationDisplay />
           </div>
         </div>
       </div>
