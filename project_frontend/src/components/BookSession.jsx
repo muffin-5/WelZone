@@ -25,7 +25,11 @@ const BookSession = () => {
         const availableSlotsResponse = await axios.get(
           "http://localhost:8080/slots/available"
         );
-        setSlots(availableSlotsResponse.data);
+        setSlots(
+          Array.isArray(availableSlotsResponse.data)
+            ? availableSlotsResponse.data
+            : []
+        );
 
         // Fetch booked slots for the user
         const bookedSlotsResponse = await axios.get(
