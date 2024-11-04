@@ -31,7 +31,11 @@ const BookSession = () => {
         const bookedSlotsResponse = await axios.get(
           `http://localhost:8080/slots/bookedbyme/${userId}`
         );
-        setBookedSlots(bookedSlotsResponse.data);
+        setBookedSlots(
+          Array.isArray(bookedSlotsResponse.data)
+            ? bookedSlotsResponse.data
+            : []
+        );
       } catch (error) {
         console.error("Error fetching slots:", error);
       } finally {
