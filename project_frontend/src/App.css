@@ -5,6 +5,19 @@
   text-align: center;
 }
 
+/* Custom shake animation */
+@keyframes shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(5deg); }
+  50% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+.hover\\:animate-shake:hover {
+  animation: shake 0.3s ease-in-out;
+}
+
+
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -40,3 +53,4 @@
 .read-the-docs {
   color: #888;
 }
+

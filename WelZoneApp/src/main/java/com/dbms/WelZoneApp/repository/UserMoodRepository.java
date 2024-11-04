@@ -17,7 +17,8 @@ public class UserMoodRepository {
     private JdbcTemplate jdbcTemplate;
 
     private static final String INSERT_USER_MOOD_SQL = "INSERT INTO user_mood (user_id, mood_id, mood_set_at) VALUES (?, ?, ?)";
-    private static final String FIND_USER_MOOD_BY_USER_ID_SQL = "SELECT * FROM user_mood WHERE user_id = ?";
+    private static final String FIND_USER_MOOD_BY_USER_ID_SQL = "SELECT * FROM user_mood WHERE user_id = ? ORDER BY mood_set_at";
+
 
     public void createUserMood(UserMood userMood) {
         jdbcTemplate.update(INSERT_USER_MOOD_SQL, userMood.getUserId(), userMood.getMoodId(), userMood.getMoodSetAt());

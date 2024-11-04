@@ -2,9 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaComment, FaBook, FaCalendarAlt, FaChartLine } from "react-icons/fa";
 import MoodTracker from "./MoodTracker";
-import SessionBooking from "./SessionBooking";
+import AffirmationDisplay from "./AffirmationDisplay";
 
-const Dashboard = () => {
+const DashboardUser = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="container mx-auto p-8">
@@ -40,6 +40,13 @@ const Dashboard = () => {
             color="bg-yellow-500"
             hoverColor="bg-yellow-600"
           />
+          <DashboardCard
+            title="Courses"
+            icon={<FaChartLine className="text-4xl mb-4" />}
+            link="/courses"
+            color="bg-red-500"
+            hoverColor="bg-yellow-600"
+          />
         </div>
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -50,9 +57,9 @@ const Dashboard = () => {
           </div>
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-2xl font-semibold mb-4 text-indigo-700">
-              Quick Session Booking
+              Today's Affirmation
             </h3>
-            <SessionBooking />
+            <AffirmationDisplay />
           </div>
         </div>
       </div>
@@ -74,4 +81,4 @@ const DashboardCard = ({ title, icon, link, color, hoverColor }) => {
   );
 };
 
-export default Dashboard;
+export default DashboardUser;

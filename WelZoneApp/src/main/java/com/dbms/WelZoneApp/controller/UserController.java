@@ -5,7 +5,9 @@ import com.dbms.WelZoneApp.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,6 +24,25 @@ public class UserController {
         userService.registerUser(user);
         return ResponseEntity.ok("User registered successfully");
     }
+
+    // Login user
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody User loginUser) {
+        boolean isAuthenticated = userService.authenticateUser(loginUser.getUsername(), loginUser.getPassword());
+
+        if (isAuthenticated) {
+            User user = userService.getUserByUsername(loginUser.getUsername()); // Assuming this method exists
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "User logged in successfully!");
+            response.put("userId", user.getUserId()); // Assuming you have a getUserId method
+
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
+        }
+    }
+
 
     // Get user by username
     @GetMapping("/{username}")

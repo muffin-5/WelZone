@@ -1,10 +1,12 @@
 package com.dbms.WelZoneApp.service;
 
 import com.dbms.WelZoneApp.model.Slot;
+import com.dbms.WelZoneApp.model.SlotWithCounselorDetails;
 import com.dbms.WelZoneApp.repository.SlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,9 +25,26 @@ public class SlotService {
         return slotRepository.findSlotById(id);
     }
 
-    // Find available slots for a counselor
+    // Find available slots for a specific counselor
     public List<Slot> findAvailableSlots(Long counselorId) {
-        return slotRepository.findAvailableSlots(counselorId);
+        LocalDateTime currentTime = LocalDateTime.now();
+        return slotRepository.findAvailableSlots(counselorId, currentTime);
+    }
+
+    // Find all available slots with counselor details
+    public List<SlotWithCounselorDetails> findAvailableSlotsWithCounselorDetails() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        return slotRepository.findAvailableSlotsWithCounselorDetails(currentTime);
+    }
+
+    // Find booked slots with end time greater than the current time
+    public List<Slot> getBookedSlotsWithEndTime(Long counselorId, LocalDateTime currentTime) {
+        return slotRepository.findBookedSlotsWithEndTime(counselorId, currentTime);
+    }
+
+    // Find booked slots by user with end time greater than the current time
+    public List<Slot> getBookedSlotsWithEndTimeByUser(Long userId, LocalDateTime currentTime) {
+        return slotRepository.findBookedSlotsWithEndTimebyUser(userId, currentTime);
     }
 
     // Book a slot
