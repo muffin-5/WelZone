@@ -29,7 +29,9 @@ const SessionDetails = () => {
       <h2 className="text-xl font-semibold mb-4">Session Details</h2>
       {sessionDetails ? (
         <div>
+
           <p><strong>Counselor Name:</strong> {sessionDetails.counselorName}</p>
+
           <p><strong>Start Time:</strong> {new Date(convertArrayToDate(sessionDetails.startTime)).toLocaleString()}</p>
           <p><strong>End Time:</strong> {new Date(convertArrayToDate(sessionDetails.endTime)).toLocaleString()}</p>
           <p><strong>Booked:</strong> {sessionDetails.booked ? "Yes" : "No"}</p>
@@ -44,10 +46,13 @@ const SessionDetails = () => {
 const UserFeedback = () => {
   const [rating, setRating] = useState(0);
   const [comments, setComments] = useState("");
+
   const [feedbackList, setFeedbackList] = useState([]);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { sessionId } = useParams();
+
 
   const fetchFeedbackList = async () => {
     try {
@@ -89,10 +94,12 @@ const UserFeedback = () => {
       setRating(0);
       setComments("");
 
+
       // Refresh the feedback list after submission
       // const updatedFeedback = await axios.get(`http://localhost:8080/api/feedback/${sessionId}`);
       // setFeedbackList(updatedFeedback.data);
       fetchFeedbackList();
+
     } catch (err) {
       setError("Failed to submit feedback. Please try again later.");
     }
@@ -103,6 +110,7 @@ const UserFeedback = () => {
       <h1 className="text-3xl font-bold mb-4">Feedback Page</h1>
       <div className="flex gap-6">
         {/* Session Details Section */}
+
         <div>
         <SessionDetails />
         {/* Feedback List Section */}
@@ -116,6 +124,7 @@ const UserFeedback = () => {
             ))}
           </ul>
           </div>
+
 
         {/* Feedback Form Section */}
         <div className="max-w-md p-5 bg-white shadow-md rounded-lg flex-1">
@@ -154,6 +163,7 @@ const UserFeedback = () => {
               Submit Feedback
             </button>
           </form>
+
 
           
         </div>
