@@ -1,6 +1,7 @@
 package com.dbms.WelZoneApp.repository;
 
 import com.dbms.WelZoneApp.model.Counselor;
+import com.dbms.WelZoneApp.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -58,6 +59,7 @@ public class CounselorRepository {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, username, password);
         return count != null && count > 0;
     }
+
 
     private Counselor mapRowToCounselor(ResultSet rs, int rowNum) throws SQLException {
         return new Counselor(

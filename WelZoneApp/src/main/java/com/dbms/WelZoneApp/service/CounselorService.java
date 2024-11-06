@@ -4,6 +4,7 @@ import com.dbms.WelZoneApp.model.Counselor;
 import com.dbms.WelZoneApp.repository.CounselorRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,6 +16,8 @@ public class CounselorService {
     }
 
     public void addCounselor(Counselor counselor) {
+        counselor.setCreatedAt(LocalDateTime.now());
+        counselor.setUpdatedAt(LocalDateTime.now());
         counselorRepository.save(counselor);
     }
 
