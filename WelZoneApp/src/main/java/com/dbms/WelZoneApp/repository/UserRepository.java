@@ -29,6 +29,12 @@ public class UserRepository {
         return jdbcTemplate.queryForObject(sql, this::mapRowToUser, username);
     }
 
+    // Find user by userId
+    public User findById(Long userId) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        return jdbcTemplate.queryForObject(sql, this::mapRowToUser, userId);
+    }
+
     // Update user details
     public void updateUser(User user) {
         String sql = "UPDATE users SET password = ?, email = ?, phone_number = ?, date_of_birth = ?, gender = ?, updated_at = ? WHERE id = ?";

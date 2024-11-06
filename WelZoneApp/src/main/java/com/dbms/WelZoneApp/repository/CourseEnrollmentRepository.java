@@ -1,6 +1,7 @@
 package com.dbms.WelZoneApp.repository;
 
 import com.dbms.WelZoneApp.model.CourseEnrollment;
+import com.dbms.WelZoneApp.model.CourseWithEnrollmentDetails;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,17 @@ public class CourseEnrollmentRepository {
             rs.getTimestamp("createdAt").toLocalDateTime(),
             rs.getTimestamp("updatedAt").toLocalDateTime()
     );
+    private RowMapper<CourseWithEnrollmentDetails> courseWIthEnrollmentRowMapper = (rs, rowNum) -> new CourseWithEnrollmentDetails(
+            rs.getLong("userId"),
+            rs.getLong("courseId"),
+            rs.getTimestamp("enrollmentDate").toLocalDateTime(),
+            rs.getString("status"),
+            rs.getTimestamp("createdAt").toLocalDateTime(),
+            rs.getTimestamp("updatedAt").toLocalDateTime(),
+            rs.getString("title"),
+            rs.getString("description"),   // Assumes `title` column from `courses`
+            rs.getDouble("price")
+    );
 
     // CRUD Operations
     public List<CourseEnrollment> findAll() {
@@ -33,9 +45,11 @@ public class CourseEnrollmentRepository {
         return jdbcTemplate.query(sql, courseEnrollmentRowMapper);
     }
 
-    public CourseEnrollment findById(Long userId, Long courseId) {
-        String sql = "SELECT * FROM course_enrollments WHERE userId = ? AND courseId = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{userId, courseId}, courseEnrollmentRowMapper);
+    public List<CourseWithEnrollmentDetails> findById(Long userId) {
+        String sql = "SELECT * FROM course_enrollments ce " +
+                "JOIN courses c ON ce.courseId = c.courseId  " +
+                "WHERE ce.userId = ?";
+        return jdbcTemplate.query(sql, new Object[]{userId}, courseWIthEnrollmentRowMapper);
     }
 
     public int save(CourseEnrollment courseEnrollment) {

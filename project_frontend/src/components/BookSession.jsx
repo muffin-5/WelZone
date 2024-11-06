@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // Function to convert an array to a Date object
 const convertArrayToDate = (dateArray) => {
@@ -15,6 +16,7 @@ const BookSession = () => {
   const [slots, setSlots] = useState([]); // Available slots
   const [bookedSlots, setBookedSlots] = useState([]); // Booked slots
   const [loading, setLoading] = useState(true);
+  const navigate=useNavigate();
 
   // Fetch available slots and booked slots on component mount
   useEffect(() => {
@@ -25,7 +27,11 @@ const BookSession = () => {
         const availableSlotsResponse = await axios.get(
           "http://localhost:8080/slots/available"
         );
-        setSlots(availableSlotsResponse.data);
+        setSlots(
+          Array.isArray(availableSlotsResponse.data)
+            ? availableSlotsResponse.data
+            : []
+        );
 
         // Fetch booked slots for the user
         const bookedSlotsResponse = await axios.get(
@@ -124,9 +130,9 @@ const BookSession = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {bookedSlots.map((slot) => (
           <div
-            key={slot.slotId} // Unique key for each booked slot
+            key={slot.id} // Unique key for each booked slot
             className="bg-white rounded-xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl p-6"
-          >
+            >
             <div className="mb-4">
               <div className="text-sm text-gray-700">
                 <p>
@@ -141,6 +147,7 @@ const BookSession = () => {
                     timeStyle: "short",
                   })}
                 </p>
+                <button onClick={()=>navigate(`./${slot.id}`)} className="bg-blue-600 text-white mt-4 px-4 py-2 rounded hover:bg-blue-700 transition">See Details</button>
               </div>
             </div>
           </div>

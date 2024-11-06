@@ -34,10 +34,13 @@ const Login = () => {
 
       if (userType === "user") {
         // Assuming responseData contains userId for users
+        console.log(responseData)
         localStorage.setItem("Id", responseData.userId); // Store the user ID
+        localStorage.setItem("whoLogged","user")
       } else if (userType === "counselor") {
         // Assuming responseData contains counselorId for counselors
         localStorage.setItem("Id", responseData.counselorId); // Store the counselor ID
+        localStorage.setItem("whoLogged","counselor")
       }
       localStorage.setItem("isAuthenticated", "true");
 

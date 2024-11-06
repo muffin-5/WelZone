@@ -29,7 +29,7 @@ public class CounselorController {
         return ResponseEntity.ok(counselorService.getAllCounselors());
     }
 
-    @GetMapping("/{counselorId}")
+    @GetMapping("/id/{counselorId}")
     public ResponseEntity<Counselor> getCounselor(@PathVariable Long counselorId) {
         Counselor counselor = counselorService.getCounselorById(counselorId);
         return ResponseEntity.ok(counselor);
@@ -59,6 +59,7 @@ public class CounselorController {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Counselor logged in successfully!");
             response.put("counselorId", counselor.getCounselorId()); // Assuming you have a getCounselorId method
+            response.put("whoLogged", "counselor");
 
             return ResponseEntity.ok(response);
         } else {

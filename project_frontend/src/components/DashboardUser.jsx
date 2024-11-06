@@ -1,16 +1,29 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { FaComment, FaBook, FaCalendarAlt, FaChartLine } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaComment, FaBook, FaCalendarAlt, FaChartLine, FaBookOpen, FaUser } from "react-icons/fa";
 import MoodTracker from "./MoodTracker";
 import AffirmationDisplay from "./AffirmationDisplay";
 
 const DashboardUser = () => {
+
+  const navigate=useNavigate();
+
+  const handleLogout=()=>{
+    localStorage.clear();
+    navigate('/') 
+  }
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="container mx-auto p-8">
-        <h2 className="text-4xl font-bold mb-8 text-indigo-700">
-          Welcome to WelZone Dashboard
-        </h2>
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-4xl font-bold mb-8 text-indigo-700">
+            Welcome to WelZone Dashboard
+          </h2>
+          <button onClick={handleLogout}
+          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"
+          >Logout</button>
+          </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <DashboardCard
             title="Start Chat"
@@ -42,10 +55,17 @@ const DashboardUser = () => {
           />
           <DashboardCard
             title="Courses"
-            icon={<FaChartLine className="text-4xl mb-4" />}
+            icon={<FaBookOpen className="text-4xl mb-4" />}
             link="/courses"
             color="bg-red-500"
             hoverColor="bg-yellow-600"
+          />
+          <DashboardCard
+            title="My Profile"
+            icon={<FaUser className="text-4xl mb-4" />}
+            link="/user/profile"
+            color="bg-teal-500"
+            hoverColor="bg-teal-600"
           />
         </div>
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
