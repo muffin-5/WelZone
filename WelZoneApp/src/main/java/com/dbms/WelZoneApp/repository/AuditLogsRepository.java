@@ -20,6 +20,7 @@ public class AuditLogsRepository {
             AuditLogs auditLog = new AuditLogs();
             auditLog.setAuditId(rs.getLong("auditId"));
             auditLog.setUserId(rs.getLong("userId"));
+            auditLog.setCouselorId(rs.getLong("counselorId"));
             auditLog.setAction(rs.getString("action"));
             auditLog.setTimestamp(rs.getTimestamp("timestamp").toLocalDateTime());
             auditLog.setDetails(rs.getString("details"));
@@ -33,6 +34,7 @@ public class AuditLogsRepository {
             AuditLogs auditLog = new AuditLogs();
             auditLog.setAuditId(rs.getLong("auditId"));
             auditLog.setUserId(rs.getLong("userId"));
+            auditLog.setCouselorId(rs.getLong("counselorId"));
             auditLog.setAction(rs.getString("action"));
             auditLog.setTimestamp(rs.getTimestamp("timestamp").toLocalDateTime());
             auditLog.setDetails(rs.getString("details"));
@@ -41,13 +43,13 @@ public class AuditLogsRepository {
     }
 
     public void save(AuditLogs auditLog) {
-        String sql = "INSERT INTO audit_logs (userId, action, timestamp, details) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, auditLog.getUserId(), auditLog.getAction(), auditLog.getTimestamp(), auditLog.getDetails());
+        String sql = "INSERT INTO audit_logs (userId,counselorId, action, timestamp, details) VALUES (?,? , ?, ?, ?)";
+        jdbcTemplate.update(sql, auditLog.getUserId(),auditLog.getCouselorId(), auditLog.getAction(), auditLog.getTimestamp(), auditLog.getDetails());
     }
 
     public void update(AuditLogs auditLog) {
-        String sql = "UPDATE audit_logs SET userId = ?, action = ?, timestamp = ?, details = ? WHERE auditId = ?";
-        jdbcTemplate.update(sql, auditLog.getUserId(), auditLog.getAction(), auditLog.getTimestamp(), auditLog.getDetails(), auditLog.getAuditId());
+        String sql = "UPDATE audit_logs SET userId = ?,counselorId= ?, action = ?, timestamp = ?, details = ? WHERE auditId = ?";
+        jdbcTemplate.update(sql, auditLog.getUserId(),auditLog.getCouselorId(), auditLog.getAction(), auditLog.getTimestamp(), auditLog.getDetails(), auditLog.getAuditId());
     }
 
     public void delete(Long auditId) {
