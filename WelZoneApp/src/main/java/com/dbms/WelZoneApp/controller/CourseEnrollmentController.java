@@ -27,11 +27,12 @@ public class CourseEnrollmentController {
     @GetMapping("/{userId}")
     public ResponseEntity<List<CourseWithEnrollmentDetails>> getEnrollmentById(@PathVariable Long userId) {
         List<CourseWithEnrollmentDetails> enrollments = courseEnrollmentService.getEnrollmentById(userId);
-        if (!enrollments.isEmpty()) {
-            return ResponseEntity.ok(enrollments);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+//        System.out.println(enrollments);
+        return ResponseEntity.ok(enrollments);
+//        if (!enrollments.isEmpty()) {
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
     }
 
     @PostMapping

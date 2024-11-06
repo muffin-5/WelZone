@@ -40,7 +40,7 @@ const CoursesPage = () => {
     fetchCourses();
     fetchMyCourses();
     setLoading(false);
-  }, [userId]);
+  }, [userId,activeTab]);
 
   const handleEnroll = async (courseId) => {
     const courseEnrollment = { userId, courseId };

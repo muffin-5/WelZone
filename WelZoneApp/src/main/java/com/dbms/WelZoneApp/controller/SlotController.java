@@ -1,8 +1,13 @@
 package com.dbms.WelZoneApp.controller;
 
+import com.dbms.WelZoneApp.model.AuditLogs;
+import com.dbms.WelZoneApp.model.SessionLog;
 import com.dbms.WelZoneApp.model.Slot;
 import com.dbms.WelZoneApp.model.SlotWithCounselorDetails;
+import com.dbms.WelZoneApp.service.AuditLogsService;
+import com.dbms.WelZoneApp.service.SessionLogService;
 import com.dbms.WelZoneApp.service.SlotService;
+import com.dbms.WelZoneApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +21,13 @@ public class SlotController {
 
     @Autowired
     private SlotService slotService;
+    private final AuditLogsService auditLogsService;
+    private final SessionLogService sessionLogService;
 
+    public SlotController(AuditLogsService auditLogsService,SessionLogService sessionLogService) {
+        this.auditLogsService=auditLogsService;
+        this.sessionLogService=sessionLogService;
+    }
 
     @GetMapping("/{sessionId}")
     public SlotWithCounselorDetails getSlot(@PathVariable Long sessionId) {
@@ -27,6 +38,8 @@ public class SlotController {
     @PostMapping("/create")
     public ResponseEntity<String> createSlot(@RequestBody Slot slot) {
         slotService.createSlot(slot);
+        AuditLogs auditLogs= auditLogsService.saveAuditLog(null,slot.getCounselorId(),"Create","Counselor created a slot");
+        sessionLogService.createSessionLog(slot.getId(),"Counselor created a slot");
         return ResponseEntity.ok("Slot created successfully.");
     }
 
@@ -58,6 +71,8 @@ public class SlotController {
     public ResponseEntity<String> bookSlot(@PathVariable Long slotId, @PathVariable Long userId) {
         boolean success = slotService.bookSlot(slotId, userId);
         if (success) {
+            AuditLogs auditLogs= auditLogsService.saveAuditLog(userId,null,"Book","User Booked a session");
+            sessionLogService.createSessionLog(slotId,"User Booked a slot");
             return ResponseEntity.ok("Slot booked successfully.");
         } else {
             return ResponseEntity.badRequest().body("Slot booking failed.");
@@ -95,6 +110,7 @@ public class SlotController {
     public ResponseEntity<String> cancelSlot(@PathVariable Long slotId) {
         boolean success = slotService.cancelSlot(slotId);
         if (success) {
+            AuditLogs auditLogs= auditLogsService.saveAuditLog(null,null,"Cancel","Session Canceled");
             return ResponseEntity.ok("Slot canceled successfully.");
         } else {
             return ResponseEntity.badRequest().body("Slot cancellation failed.");

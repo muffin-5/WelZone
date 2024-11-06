@@ -1,5 +1,6 @@
 package com.dbms.WelZoneApp.controller;
 
+import com.dbms.WelZoneApp.model.AuditLogs;
 import com.dbms.WelZoneApp.model.User;
 import com.dbms.WelZoneApp.repository.AuditLogsRepository;
 import com.dbms.WelZoneApp.service.AuditLogsService;
@@ -27,7 +28,8 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         userService.registerUser(user);
-        auditLogsService.saveAuditLog(user.getUserId(),null,"Registered","User registered successfully");
+        AuditLogs auditLogs= auditLogsService.saveAuditLog(user.getUserId(),null,"Registered","User registered successfully");
+
         return ResponseEntity.ok("User registered successfully");
     }
 
@@ -45,7 +47,7 @@ public class UserController {
             response.put("userId", user.getUserId()); // Assuming you have a getUserId method
             response.put("whoLogged", "user");
 
-            auditLogsService.saveAuditLog(user.getUserId(),null,"Logged In","User logged in successfully");
+            AuditLogs auditLogs= auditLogsService.saveAuditLog(user.getUserId(),null,"Logged In","User logged in successfully");
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
