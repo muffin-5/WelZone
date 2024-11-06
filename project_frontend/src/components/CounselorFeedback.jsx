@@ -8,11 +8,22 @@ export default function FeedbackPage() {
   const counselorId = localStorage.getItem("Id"); // Assuming counselor ID is stored in localStorage
   const { sessionId } = useParams();
 
+  const convertArrayToDate = (dateArray) => {
+    if (!Array.isArray(dateArray) || dateArray.length < 5) {
+      throw new Error("Invalid date array");
+    }
+  
+    const [year, month, day, hour, minute] = dateArray;
+    return new Date(year, month - 1, day, hour, minute);
+  };
+
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/feedback/${sessionId}`); // API endpoint to fetch feedbacks
-        setFeedbacks(response.data);
+        const data=response.data;
+        data.reverse();
+        setFeedbacks(data);
       } catch (err) {
         setError("Failed to fetch feedback. Please try again later.");
       }
@@ -40,7 +51,7 @@ export default function FeedbackPage() {
                 <strong>Comments:</strong> {feedback.comments}
               </p>
               <p className="text-gray-500 text-sm">
-                Feedback Date: {new Date(feedback.createdAt).toLocaleDateString()}
+                Feedback Date: {new Date(convertArrayToDate(feedback.createdAt)).toLocaleDateString()}
               </p>
             </div>
           ))

@@ -1,6 +1,8 @@
 package com.dbms.WelZoneApp.controller;
 
 import com.dbms.WelZoneApp.model.User;
+import com.dbms.WelZoneApp.repository.AuditLogsRepository;
+import com.dbms.WelZoneApp.service.AuditLogsService;
 import com.dbms.WelZoneApp.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,11 @@ import java.util.Map;
 @RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
+    private final AuditLogsService auditLogsService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuditLogsService auditLogsService) {
         this.userService = userService;
+        this.auditLogsService=auditLogsService;
     }
 
 
@@ -23,6 +27,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         userService.registerUser(user);
+        auditLogsService.saveAuditLog(user.getUserId(),"Registered","User registered successfully");
         return ResponseEntity.ok("User registered successfully");
     }
 
@@ -40,6 +45,7 @@ public class UserController {
             response.put("userId", user.getUserId()); // Assuming you have a getUserId method
             response.put("whoLogged", "user");
 
+            auditLogsService.saveAuditLog(user.getUserId(),"Logged In","User logged in successfully");
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
@@ -66,6 +72,7 @@ public class UserController {
     public ResponseEntity<String> updateUser(@PathVariable Long userId, @RequestBody User user) {
         user.setUserId(userId);
         userService.updateUser(user);
+        auditLogsService.saveAuditLog(user.getUserId(),"Update","User updated successfully");
         return ResponseEntity.ok("User updated successfully");
     }
 
@@ -73,6 +80,8 @@ public class UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
+        User user=userService.getUserById(userId);
+        auditLogsService.saveAuditLog(user.getUserId(),"Delete","User deleted successfully");
         return ResponseEntity.ok("User deleted successfully");
     }
 

@@ -17,16 +17,17 @@ public class SlotController {
     @Autowired
     private SlotService slotService;
 
+
+    @GetMapping("/{sessionId}")
+    public SlotWithCounselorDetails getSlot(@PathVariable Long sessionId) {
+        return slotService.findSlotsWithCounselorDetails(sessionId);
+    }
+
     // Create a new slot (for counselors/admins)
     @PostMapping("/create")
     public ResponseEntity<String> createSlot(@RequestBody Slot slot) {
         slotService.createSlot(slot);
         return ResponseEntity.ok("Slot created successfully.");
-    }
-
-    @GetMapping("/{sessionId}")
-    public Slot getSlot(@PathVariable Long sessionId) {
-        return slotService.findSlotById(sessionId);
     }
 
     // Get available slots for a counselor

@@ -5,6 +5,8 @@ import com.dbms.WelZoneApp.repository.AuditLogsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,9 +16,13 @@ public class AuditLogsService {
     private AuditLogsRepository auditLogsRepository;
 
     // Method to save an audit log entry (Create)
-    public AuditLogs saveAuditLog(AuditLogs auditLog) {
+    public void saveAuditLog(Long userId, String action, String details) {
+        AuditLogs auditLog=new AuditLogs();
+        auditLog.setUserId(userId);
+        auditLog.setAction(action);
+        auditLog.setDetails(details);
+        auditLog.setTimestamp(LocalDateTime.now());
         auditLogsRepository.save(auditLog);
-        return auditLog; // Return the saved audit log
     }
 
     // Method to get all audit logs (Read)

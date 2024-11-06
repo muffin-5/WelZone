@@ -9,17 +9,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/audit-logs")
+@RequestMapping("/api/audit-logs")
 public class AuditLogsController {
     @Autowired
     private AuditLogsService auditLogsService;
 
     // Endpoint to create a new audit log entry (Create)
-    @PostMapping
-    public ResponseEntity<AuditLogs> createAuditLog(@RequestBody AuditLogs auditLog) {
-        AuditLogs createdLog = auditLogsService.saveAuditLog(auditLog);
-        return ResponseEntity.ok(createdLog);
-    }
+//    @PostMapping
+//    public ResponseEntity<AuditLogs> createAuditLog(@RequestBody AuditLogs auditLog) {
+//        AuditLogs createdLog = auditLogsService.saveAuditLog(auditLog);
+//        return ResponseEntity.ok(createdLog);
+//    }
 
     // Endpoint to get all audit logs (Read)
     @GetMapping
