@@ -28,9 +28,9 @@ public class FeedbackRepository {
         });
     }
 
-    public Feedback findById(Long feedbackId) {
-        String sql = "SELECT * FROM feedback WHERE feedbackId = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{feedbackId}, (rs, rowNum) -> {
+    public List<Feedback> findById(Long feedbackId) {
+        String sql = "SELECT * FROM feedback WHERE sessionId = ?";
+        return jdbcTemplate.query(sql, new Object[]{feedbackId}, (rs, rowNum) -> {
             Feedback feedback = new Feedback();
             feedback.setFeedbackId(rs.getLong("feedbackId"));
             feedback.setSessionId(rs.getLong("sessionId"));
@@ -43,6 +43,7 @@ public class FeedbackRepository {
     }
 
     public void save(Feedback feedback) {
+//        System.out.println("Hello");
         String sql = "INSERT INTO feedback (sessionId, rating, comments, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, feedback.getSessionId(), feedback.getRating(), feedback.getComments(), feedback.getCreatedAt(), feedback.getUpdatedAt());
     }

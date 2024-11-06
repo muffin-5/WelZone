@@ -32,6 +32,11 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    // Find user by userId
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
+
     // Update user
     public void updateUser(User user) {
         user.setUpdatedAt(LocalDateTime.now());

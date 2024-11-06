@@ -1,6 +1,7 @@
 package com.dbms.WelZoneApp.service;
 
 import com.dbms.WelZoneApp.model.CourseEnrollment;
+import com.dbms.WelZoneApp.model.CourseWithEnrollmentDetails;
 import com.dbms.WelZoneApp.repository.CourseEnrollmentRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +21,15 @@ public class CourseEnrollmentService {
         return courseEnrollmentRepository.findAll();
     }
 
-    public CourseEnrollment getEnrollmentById(Long userId, Long courseId) {
-        return courseEnrollmentRepository.findById(userId, courseId);
+    public List<CourseWithEnrollmentDetails> getEnrollmentById(Long userId) {
+        return courseEnrollmentRepository.findById(userId);
     }
 
     public void createEnrollment(CourseEnrollment courseEnrollment) {
+        courseEnrollment.setEnrollmentDate(LocalDateTime.now());
         courseEnrollment.setCreatedAt(LocalDateTime.now());
         courseEnrollment.setUpdatedAt(LocalDateTime.now());
+        courseEnrollment.setStatus("active");
         courseEnrollmentRepository.save(courseEnrollment);
     }
 

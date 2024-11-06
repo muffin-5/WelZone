@@ -91,13 +91,14 @@ const CounselorSessions = () => {
                 <li
                   key={session.id}
                   className="flex justify-between py-2 items-center"
-                >
+                  >
                   <div className="text-gray-700">
                     <span className="font-medium">Session with a User</span>
                   </div>
                   <div className="text-gray-600">
                     {startTime.toLocaleString()} - {endTime.toLocaleString()}
                   </div>
+                  <button onClick={()=>navigate(`./${session.id}`)} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">See details</button>
                 </li>
               );
             })}
@@ -120,6 +121,7 @@ const CounselorSessions = () => {
                   key={slot.id}
                   className="flex justify-between py-2 items-center"
                 >
+                  
                   <div className="text-gray-700">
                     <span className="font-medium">Available Slot</span>
                   </div>

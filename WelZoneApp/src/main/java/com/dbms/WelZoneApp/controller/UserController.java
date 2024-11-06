@@ -18,6 +18,7 @@ public class UserController {
         this.userService = userService;
     }
 
+
     // Register a new user
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
@@ -33,9 +34,11 @@ public class UserController {
         if (isAuthenticated) {
             User user = userService.getUserByUsername(loginUser.getUsername()); // Assuming this method exists
 
+
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User logged in successfully!");
             response.put("userId", user.getUserId()); // Assuming you have a getUserId method
+            response.put("whoLogged", "user");
 
             return ResponseEntity.ok(response);
         } else {
@@ -48,6 +51,13 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseEntity<User> getUser(@PathVariable String username) {
         User user = userService.getUserByUsername(username);
+        return ResponseEntity.ok(user);
+    }
+
+    // Get user by userId
+    @GetMapping("/id/{userId}")
+    public ResponseEntity<User> getUser(@PathVariable Long userId) {
+        User user = userService.getUserById(userId);
         return ResponseEntity.ok(user);
     }
 
