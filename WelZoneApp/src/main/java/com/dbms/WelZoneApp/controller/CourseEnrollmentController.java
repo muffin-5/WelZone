@@ -1,7 +1,9 @@
 package com.dbms.WelZoneApp.controller;
 
 import com.dbms.WelZoneApp.model.CourseEnrollment;
+import com.dbms.WelZoneApp.model.CourseWithEnrollmentDetails;
 import com.dbms.WelZoneApp.service.CourseEnrollmentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +24,11 @@ public class CourseEnrollmentController {
         return courseEnrollmentService.getAllEnrollments();
     }
 
-    @GetMapping("/{userId}/{courseId}")
-    public ResponseEntity<CourseEnrollment> getEnrollmentById(@PathVariable Long userId, @PathVariable Long courseId) {
-        CourseEnrollment enrollment = courseEnrollmentService.getEnrollmentById(userId, courseId);
-        if (enrollment != null) {
-            return ResponseEntity.ok(enrollment);
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<CourseWithEnrollmentDetails>> getEnrollmentById(@PathVariable Long userId) {
+        List<CourseWithEnrollmentDetails> enrollments = courseEnrollmentService.getEnrollmentById(userId);
+        if (!enrollments.isEmpty()) {
+            return ResponseEntity.ok(enrollments);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -34,9 +36,16 @@ public class CourseEnrollmentController {
 
     @PostMapping
     public ResponseEntity<String> createEnrollment(@RequestBody CourseEnrollment courseEnrollment) {
-        courseEnrollmentService.createEnrollment(courseEnrollment);
-        return ResponseEntity.ok("Enrollment created successfully!");
+        try {
+            courseEnrollmentService.createEnrollment(courseEnrollment);
+            return ResponseEntity.ok("Enrollment created successfully!");
+        } catch (Exception e) {
+            // Log error details
+            System.err.println("Error occurred during enrollment: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to create enrollment.");
+        }
     }
+
 
     @PutMapping("/{userId}/{courseId}")
     public ResponseEntity<String> updateEnrollment(@PathVariable Long userId, @PathVariable Long courseId, @RequestBody CourseEnrollment courseEnrollment) {
@@ -45,6 +54,7 @@ public class CourseEnrollmentController {
         courseEnrollmentService.updateEnrollment(courseEnrollment);
         return ResponseEntity.ok("Enrollment updated successfully!");
     }
+
 
     @DeleteMapping("/{userId}/{courseId}")
     public ResponseEntity<String> deleteEnrollment(@PathVariable Long userId, @PathVariable Long courseId) {

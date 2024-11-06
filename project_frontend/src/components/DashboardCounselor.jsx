@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const convertArrayToDate = (dateArray) => {
@@ -11,6 +11,7 @@ const convertArrayToDate = (dateArray) => {
 const DashboardCounsellor = () => {
   const [upcomingSessions, setUpcomingSessions] = useState([]); // Initialize as an array
   const [loading, setLoading] = useState(true);
+  const navigate=useNavigate();
 
   useEffect(() => {
     const counselorId = localStorage.getItem("Id");
@@ -39,6 +40,11 @@ const DashboardCounsellor = () => {
 
     fetchUpcomingSessions();
   }, []);
+
+  const handleLogout=()=>{
+    localStorage.clear();
+    navigate('/')
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -84,12 +90,12 @@ const DashboardCounsellor = () => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/counselor/logout"
+              <span
+                onClick={handleLogout}
                 className="block p-4 text-gray-600 hover:bg-gray-200"
               >
                 Logout
-              </Link>
+              </span>
             </li>
           </ul>
         </nav>

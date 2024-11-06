@@ -20,6 +20,7 @@ public class SlotService {
         slotRepository.createSlot(slot);
     }
 
+
     // Find a slot by ID
     public Slot findSlotById(Long id) {
         return slotRepository.findSlotById(id);

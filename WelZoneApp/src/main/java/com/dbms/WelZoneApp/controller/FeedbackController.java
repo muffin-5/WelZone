@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/feedback")
+@RequestMapping("/api/feedback")
 public class FeedbackController {
     private final FeedbackService feedbackService;
 
@@ -21,12 +21,13 @@ public class FeedbackController {
     }
 
     @GetMapping("/{id}")
-    public Feedback getFeedbackById(@PathVariable("id") Long feedbackId) {
+    public List<Feedback> getFeedbackById(@PathVariable("id") Long feedbackId) {
         return feedbackService.getFeedbackById(feedbackId);
     }
 
     @PostMapping
     public void addFeedback(@RequestBody Feedback feedback) {
+
         feedbackService.addFeedback(feedback);
     }
 

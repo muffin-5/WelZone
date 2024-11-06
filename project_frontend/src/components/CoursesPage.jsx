@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import  { useNavigate } from "react-router-dom";
 import axios from "axios"; // Import axios to make HTTP requests
 
 const convertArrayToDate = (dateArray) => {
@@ -10,6 +11,8 @@ const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate=useNavigate();
 
   // Fetch courses from the API
   useEffect(() => {
@@ -37,8 +40,8 @@ const CoursesPage = () => {
     };
 
     try {
-      const response = await axios.put(
-        `http://localhost:8080/enrollments/${userId}/${courseId}`,
+      const response = await axios.post(
+        `http://localhost:8080/enrollments`,
         courseEnrollment
       );
       alert(response.data); // Show success message
@@ -55,6 +58,12 @@ const CoursesPage = () => {
 
   return (
     <div className="courses-page p-6">
+      <button
+        onClick={() => navigate('./myCourses')}
+        className="mt-4 bg-green-500 text-white py-2 px-4 my-3 rounded hover:bg-blue-600"
+      >
+        My Courses
+      </button>
       <h2 className="text-2xl font-bold mb-4">All Available Courses</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.length > 0 ? (

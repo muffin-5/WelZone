@@ -24,6 +24,11 @@ public class SlotController {
         return ResponseEntity.ok("Slot created successfully.");
     }
 
+    @GetMapping("/{sessionId}")
+    public Slot getSlot(@PathVariable Long sessionId) {
+        return slotService.findSlotById(sessionId);
+    }
+
     // Get available slots for a counselor
     @GetMapping("/available/{counselorId}")
     public List<Slot> getAvailableSlots(@PathVariable Long counselorId) {
