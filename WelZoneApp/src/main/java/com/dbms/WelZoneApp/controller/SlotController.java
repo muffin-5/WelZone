@@ -17,6 +17,12 @@ public class SlotController {
     @Autowired
     private SlotService slotService;
 
+
+    @GetMapping("/{sessionId}")
+    public SlotWithCounselorDetails getSlot(@PathVariable Long sessionId) {
+        return slotService.findSlotsWithCounselorDetails(sessionId);
+    }
+
     // Create a new slot (for counselors/admins)
     @PostMapping("/create")
     public ResponseEntity<String> createSlot(@RequestBody Slot slot) {

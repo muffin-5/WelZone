@@ -26,6 +26,10 @@ public class SlotService {
         return slotRepository.findSlotById(id);
     }
 
+    public SlotWithCounselorDetails findSlotsWithCounselorDetails(Long id) {
+        return slotRepository.findSlotsWithCounselorDetails(id);
+    }
+
     // Find available slots for a specific counselor
     public List<Slot> findAvailableSlots(Long counselorId) {
         LocalDateTime currentTime = LocalDateTime.now();

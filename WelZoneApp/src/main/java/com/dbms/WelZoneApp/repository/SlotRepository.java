@@ -34,6 +34,11 @@ public class SlotRepository {
                     "FROM slots s " +
                     "JOIN counselors c ON s.counselor_id = c.counselor_id " +
                     "WHERE s.booked = false AND s.end_time >= ?";
+    private static final String FIND_SLOTS_WITH_COUNSELOR_DETAILS_SQL =
+            "SELECT * "+
+            "FROM slots s " +
+            "JOIN counselors c ON s.counselor_id = c.counselor_id " +
+            "WHERE s.id = ?";
 
     // Method to create a slot
     public void createSlot(Slot slot) {
@@ -43,6 +48,14 @@ public class SlotRepository {
     // Method to find a slot by its ID
     public Slot findSlotById(Long id) {
         return jdbcTemplate.queryForObject(FIND_SLOT_BY_ID_SQL, new Object[]{id}, new SlotRowMapper());
+    }
+
+    public SlotWithCounselorDetails findSlotsWithCounselorDetails(Long id) {
+        return jdbcTemplate.queryForObject(
+                FIND_SLOTS_WITH_COUNSELOR_DETAILS_SQL,
+                new Object[]{id},
+                new SlotWithCounselorDetailsRowMapper()
+        );
     }
 
     // Method to find all available slots for a specific counselor

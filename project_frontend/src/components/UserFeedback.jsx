@@ -29,7 +29,9 @@ const SessionDetails = () => {
       <h2 className="text-xl font-semibold mb-4">Session Details</h2>
       {sessionDetails ? (
         <div>
-          <p><strong>Counselor ID:</strong> {sessionDetails.counselorId}</p>
+
+          <p><strong>Counselor Name:</strong> {sessionDetails.counselorName}</p>
+
           <p><strong>Start Time:</strong> {new Date(convertArrayToDate(sessionDetails.startTime)).toLocaleString()}</p>
           <p><strong>End Time:</strong> {new Date(convertArrayToDate(sessionDetails.endTime)).toLocaleString()}</p>
           <p><strong>Booked:</strong> {sessionDetails.booked ? "Yes" : "No"}</p>
@@ -44,9 +46,28 @@ const SessionDetails = () => {
 const UserFeedback = () => {
   const [rating, setRating] = useState(0);
   const [comments, setComments] = useState("");
+
+  const [feedbackList, setFeedbackList] = useState([]);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { sessionId } = useParams();
+
+
+  const fetchFeedbackList = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/feedback/${sessionId}`);
+      const data=response.data;
+      data.reverse();
+      setFeedbackList(response.data);
+    } catch (err) {
+      console.error("Failed to fetch feedback list:", err);
+    }
+  };
+  useEffect(() => {
+
+    fetchFeedbackList();
+  }, [sessionId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -72,6 +93,13 @@ const UserFeedback = () => {
       setSuccess("Feedback submitted successfully!");
       setRating(0);
       setComments("");
+
+
+      // Refresh the feedback list after submission
+      // const updatedFeedback = await axios.get(`http://localhost:8080/api/feedback/${sessionId}`);
+      // setFeedbackList(updatedFeedback.data);
+      fetchFeedbackList();
+
     } catch (err) {
       setError("Failed to submit feedback. Please try again later.");
     }
@@ -82,7 +110,21 @@ const UserFeedback = () => {
       <h1 className="text-3xl font-bold mb-4">Feedback Page</h1>
       <div className="flex gap-6">
         {/* Session Details Section */}
+
+        <div>
         <SessionDetails />
+        {/* Feedback List Section */}
+        <h2 className="text-xl font-bold mt-6">Feedback from Users</h2>
+          <ul className="mt-4">
+            {feedbackList.map((feedback, index) => (
+              <li key={index} className="mb-4 p-4 border rounded-lg bg-gray-50">
+                <p><strong>Rating:</strong> {feedback.rating}</p>
+                <p><strong>Comments:</strong> {feedback.comments}</p>
+              </li>
+            ))}
+          </ul>
+          </div>
+
 
         {/* Feedback Form Section */}
         <div className="max-w-md p-5 bg-white shadow-md rounded-lg flex-1">
@@ -121,6 +163,9 @@ const UserFeedback = () => {
               Submit Feedback
             </button>
           </form>
+
+
+          
         </div>
       </div>
     </div>
