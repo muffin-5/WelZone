@@ -34,13 +34,12 @@ const Login = () => {
 
       if (userType === "user") {
         // Assuming responseData contains userId for users
-        console.log(responseData)
         localStorage.setItem("Id", responseData.userId); // Store the user ID
-        localStorage.setItem("whoLogged","user")
+        localStorage.setItem("whoLogged", "user");
       } else if (userType === "counselor") {
         // Assuming responseData contains counselorId for counselors
         localStorage.setItem("Id", responseData.counselorId); // Store the counselor ID
-        localStorage.setItem("whoLogged","counselor")
+        localStorage.setItem("whoLogged", "counselor");
       }
       localStorage.setItem("isAuthenticated", "true");
 
@@ -56,28 +55,28 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md space-y-6">
-        <h2 className="text-2xl font-bold text-blue-600 text-center flex items-center justify-center">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#2E3B4E] to-[#6C8FAD]">
+      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-md space-y-6">
+        <h2 className="text-3xl font-bold text-[#4C6A92] text-center flex items-center justify-center">
           <FaLock className="mr-2" /> Login
         </h2>
 
         {/* User Type Selection */}
         {!userType ? (
           <div className="space-y-4 text-center">
-            <h3 className="text-lg font-medium text-gray-700">
+            <h3 className="text-lg font-medium text-[#4C6A92]">
               Select User Type
             </h3>
             <div className="flex justify-center space-x-4">
               <button
                 onClick={() => handleUserTypeSelection("user")}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 flex items-center"
+                className="px-6 py-3 bg-[#4C6A92] text-white rounded-lg hover:bg-[#3B4C63] transition duration-300 flex items-center"
               >
                 <FaUsers className="mr-2" /> User
               </button>
               <button
                 onClick={() => handleUserTypeSelection("counselor")}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-300 flex items-center"
+                className="px-6 py-3 bg-[#F5A623] text-white rounded-lg hover:bg-[#D88D1E] transition duration-300 flex items-center"
               >
                 <FaUserTie className="mr-2" /> Counselor
               </button>
@@ -113,7 +112,7 @@ const Login = () => {
             </div>
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 flex justify-center items-center"
+              className="w-full py-3 bg-[#4C6A92] text-white rounded-lg hover:bg-[#3B4C63] transition duration-300 flex justify-center items-center"
             >
               <FaLock className="mr-2" /> Login
             </button>

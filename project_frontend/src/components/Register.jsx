@@ -16,11 +16,11 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
-      <div className="bg-white rounded-xl shadow-lg p-8 md:p-16 max-w-3xl text-center space-y-8">
+    <div className="min-h-screen bg-gradient-to-r from-[#2E3B4E] to-[#6C8FAD] flex items-center justify-center">
+      <div className="bg-white rounded-xl shadow-xl p-8 md:p-16 max-w-3xl text-center space-y-8">
         {/* Heading */}
-        <h2 className="text-3xl font-bold text-blue-600">Register As</h2>
-        <p className="text-gray-600 text-lg">
+        <h2 className="text-3xl font-bold text-[#4C6A92]">Register As</h2>
+        <p className="text-[#4C6A92] text-lg">
           Choose whether you want to register as a User or as a Counselor.
         </p>
 
@@ -29,7 +29,7 @@ const Register = () => {
           {/* Register as User */}
           <button
             onClick={handleUserRegistration}
-            className="flex flex-col items-center justify-center px-6 py-4 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out w-40"
+            className="flex flex-col items-center justify-center px-6 py-4 bg-[#4C6A92] text-white rounded-lg shadow-md hover:bg-[#3B4C63] transition duration-300 ease-in-out w-40"
           >
             <FaUser className="text-4xl mb-2" />
             <span className="font-semibold">User</span>
@@ -38,7 +38,7 @@ const Register = () => {
           {/* Register as Counselor */}
           <button
             onClick={handleCounselorRegistration}
-            className="flex flex-col items-center justify-center px-6 py-4 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-300 ease-in-out w-40"
+            className="flex flex-col items-center justify-center px-6 py-4 bg-[#F5A623] text-white rounded-lg shadow-md hover:bg-[#D88D1E] transition duration-300 ease-in-out w-40"
           >
             <FaUserTie className="text-4xl mb-2" />
             <span className="font-semibold">Counselor</span>

@@ -9,11 +9,12 @@ const UserRegistration = () => {
     password: "",
     email: "",
     phoneNumber: "",
-    dateOfBirth: "", // Keep this for input but we'll transform it later
+    dateOfBirth: "",
     gender: "",
   });
 
   const [message, setMessage] = useState(""); // Message for registration status
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
   const navigate = useNavigate(); // For redirecting to the landing page
 
   // Handle input changes
@@ -36,7 +37,6 @@ const UserRegistration = () => {
       0, // Placeholder
     ];
 
-    // Create a new payload for submission
     const payload = {
       ...formData,
       dateOfBirth: dateArray,
@@ -51,7 +51,7 @@ const UserRegistration = () => {
 
       // Redirect to the landing page after a short delay
       setTimeout(() => {
-        navigate("/");
+        navigate("/"); // Redirect after successful registration
       }, 2000); // 2-second delay for the message to be visible
     } catch (error) {
       setMessage("Registration failed. Please try again.");
@@ -59,20 +59,20 @@ const UserRegistration = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 to-purple-200">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#2E3B4E] to-[#6C8FAD]">
       <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-lg">
-        <h2 className="text-3xl font-extrabold text-gray-800 text-center mb-8">
+        <h2 className="text-3xl font-extrabold text-[#4C6A92] text-center mb-8">
           Create Your Account
         </h2>
         {message && (
           <div className="text-center mb-6">
-            <p className="text-lg text-green-600 font-semibold">{message}</p>
+            <p className="text-lg text-[#F5A623] font-semibold">{message}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Username
             </label>
             <input
@@ -81,35 +81,49 @@ const UserRegistration = () => {
               value={formData.username}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Password
             </label>
             <input
-              type="password"
+              type={showPassword ? "text" : "password"} // Conditional rendering for input type
               name="password"
               value={formData.password}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
+            <div className="flex items-center mt-2">
+              <input
+                type="checkbox"
+                id="showPassword"
+                checked={showPassword}
+                onChange={() => setShowPassword(!showPassword)} // Toggle showPassword state
+                className="mr-2"
+              />
+              <label htmlFor="showPassword" className="text-sm text-[#4C6A92]">
+                Show Password
+              </label>
+            </div>
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">Email</label>
+            <label className="text-sm font-semibold text-[#4C6A92]">
+              Email
+            </label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Phone Number
             </label>
             <input
@@ -118,11 +132,11 @@ const UserRegistration = () => {
               value={formData.phoneNumber}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Date of Birth
             </label>
             <input
@@ -131,11 +145,11 @@ const UserRegistration = () => {
               value={formData.dateOfBirth}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Gender
             </label>
             <select
@@ -143,7 +157,7 @@ const UserRegistration = () => {
               value={formData.gender}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
@@ -153,7 +167,7 @@ const UserRegistration = () => {
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300"
+            className="w-full py-3 bg-[#4C6A92] text-white font-bold rounded-lg hover:bg-[#3B4C63] transition duration-300"
           >
             Register
           </button>

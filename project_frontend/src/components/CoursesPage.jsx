@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import  { useNavigate } from "react-router-dom";
-import axios from "axios"; // Import axios to make HTTP requests
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const convertArrayToDate = (dateArray) => {
   const [year, month, day, hour, minute] = dateArray;
@@ -9,98 +9,147 @@ const convertArrayToDate = (dateArray) => {
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
+  const [myCourses, setMyCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("available"); // Track the active tab
+  const userId = localStorage.getItem("Id"); // Retrieve userId from localStorage
+  const navigate = useNavigate();
 
-  const navigate=useNavigate();
-
-  // Fetch courses from the API
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get("http://localhost:8080/courses");
         setCourses(response.data);
-        setLoading(false);
       } catch (err) {
-        setError("Failed to fetch courses. Please try again later.");
-        setLoading(false);
+        setError("Failed to fetch available courses. Please try again later.");
+      }
+    };
+
+    const fetchMyCourses = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/enrollments/${userId}`
+        );
+        setMyCourses(response.data);
+      } catch (err) {
+        setError("Failed to fetch your courses. Please try again later.");
       }
     };
 
     fetchCourses();
-  }, []); // Empty dependency array means this runs once after the component mounts
+    fetchMyCourses();
+    setLoading(false);
+  }, [userId]);
 
-  // Function to handle course enrollment
   const handleEnroll = async (courseId) => {
-    const userId = localStorage.getItem("Id"); // Get userId from local storage
-    const courseEnrollment = {
-      userId: userId, // Pass userId from local storage
-      courseId: courseId, // Pass the courseId from the clicked course
-      // Add any additional properties needed for enrollment here
-    };
-
+    const courseEnrollment = { userId, courseId };
     try {
       const response = await axios.post(
-        `http://localhost:8080/enrollments`,
+        "http://localhost:8080/enrollments",
         courseEnrollment
       );
-      alert(response.data); // Show success message
+      alert(response.data);
     } catch (err) {
-      alert("Failed to enroll in the course. Please try again later."); // Show error message
+      alert("Failed to enroll in the course. Please try again later.");
     }
   };
 
-  // If the data is still loading, show a loading message
   if (loading) return <p>Loading courses...</p>;
 
-  // If there's an error, show the error message
   if (error) return <p>{error}</p>;
 
   return (
     <div className="courses-page p-6">
-      <button
-        onClick={() => navigate('./myCourses')}
-        className="mt-4 bg-green-500 text-white py-2 px-4 my-3 rounded hover:bg-blue-600"
-      >
-        My Courses
-      </button>
-      <h2 className="text-2xl font-bold mb-4">All Available Courses</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.length > 0 ? (
-          courses.map((course) => (
-            <div
-              key={course.courseId}
-              className="bg-white shadow-md rounded-lg p-4"
-            >
-              <h3 className="text-xl font-semibold">{course.title}</h3>
-              <p className="text-gray-700">{course.description}</p>
-              <p className="text-green-500 font-semibold mt-2">
-                Price: ${course.price}
-              </p>
-              <p className="text-gray-500 text-sm">
-                Created At:{" "}
-                {new Date(
-                  convertArrayToDate(course.createdAt)
-                ).toLocaleDateString()}
-              </p>
-              <p className="text-gray-500 text-sm">
-                Last Updated:{" "}
-                {new Date(
-                  convertArrayToDate(course.updatedAt)
-                ).toLocaleDateString()}
-              </p>
-              <button
-                onClick={() => handleEnroll(course.courseId)}
-                className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-              >
-                Enroll
-              </button>
-            </div>
-          ))
-        ) : (
-          <p>No courses available.</p>
-        )}
+      {/* Tabs */}
+      <div className="flex space-x-6 mb-6 border-b-2 border-gray-300">
+        <button
+          className={`py-2 px-6 text-lg font-semibold ${
+            activeTab === "available"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-600"
+          }`}
+          onClick={() => setActiveTab("available")}
+        >
+          Available Courses
+        </button>
+        <button
+          className={`py-2 px-6 text-lg font-semibold ${
+            activeTab === "myCourses"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-gray-600"
+          }`}
+          onClick={() => setActiveTab("myCourses")}
+        >
+          My Courses
+        </button>
       </div>
+
+      {/* Available Courses */}
+      {activeTab === "available" && (
+        <div>
+          <h2 className="text-2xl font-bold mb-4">All Available Courses</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {courses.length > 0 ? (
+              courses.map((course) => (
+                <div
+                  key={course.courseId}
+                  className="bg-white shadow-lg rounded-lg p-6"
+                >
+                  <h3 className="text-xl font-semibold">{course.title}</h3>
+                  <p className="text-gray-700 mb-4">{course.description}</p>
+                  <p className="text-green-500 font-semibold mt-2">
+                    Price: ${course.price}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Created At:{" "}
+                    {new Date(
+                      convertArrayToDate(course.createdAt)
+                    ).toLocaleDateString()}
+                  </p>
+                  <button
+                    onClick={() => handleEnroll(course.courseId)}
+                    className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                  >
+                    Enroll
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p>No courses available.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* My Courses */}
+      {activeTab === "myCourses" && (
+        <div>
+          <h2 className="text-2xl font-bold mb-4">My Enrolled Courses</h2>
+          {myCourses.length > 0 ? (
+            myCourses.map((course) => (
+              <div
+                key={course.courseId}
+                className="bg-white shadow-lg rounded-lg p-6 mb-4"
+              >
+                <h2 className="text-xl font-semibold mb-2">{course.title}</h2>
+                <p className="text-gray-700 mb-4">{course.description}</p>
+                <p className="text-green-500 font-semibold">
+                  Price: ${course.price}
+                </p>
+                <p className="text-gray-500 text-sm">
+                  Enrolled On:{" "}
+                  {new Date(course.enrollmentDate).toLocaleDateString()}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500">
+              You are not enrolled in any courses yet.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
