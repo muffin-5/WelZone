@@ -16,14 +16,13 @@ import CounselorSessions from "./components/CounselorSessions";
 import AddSlot from "./components/AddSlot";
 import BookSession from "./components/BookSession";
 import MoodProgress from "./components/UserProgress";
-import MyCourses from "./components/MyCourses";
 import UserProfile from "./components/UserProfile";
 import CounselorProfile from "./components/CounselorProfile";
 import CounselorFeedback from "./components/CounselorFeedback";
 import UserFeedback from "./components/UserFeedback";
+import MyCourses from "./components/MyCourses";
 
 function App() {
-  
   return (
     <Router>
       <div className="app">
@@ -41,7 +40,10 @@ function App() {
           <Route path="/dashboarduser" element={<DashboardUser />} />
           <Route path="/dashboardcounsellor" element={<DashboardCounselor />} />
           <Route path="/counselor/sessions" element={<CounselorSessions />} />
-          <Route path="/counselor/sessions/:sessionId" element={<CounselorFeedback/>} />
+          <Route
+            path="/counselor/sessions/:sessionId"
+            element={<CounselorFeedback />}
+          />
           <Route path="/counselor/add-slot" element={<AddSlot />} />
           <Route path="/progress" element={<MoodProgress />} />
 
@@ -50,6 +52,7 @@ function App() {
           <Route path="/blogbyme" element={<BlogbyCounselor />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/myCourses" element={<MyCourses />} />
+
           <Route path="/book-session" element={<BookSession />} />
           <Route path="/book-session/:sessionId" element={<UserFeedback />} />
 
@@ -58,8 +61,8 @@ function App() {
             path="/login/counselor"
             element={<Login userType="counselor" />}
           />
-          <Route path="/user/profile" element={<UserProfile/>} />
-          <Route path="/counselor/profile" element={<CounselorProfile/>} />
+          <Route path="/user/profile" element={<UserProfile />} />
+          <Route path="/counselor/profile" element={<CounselorProfile />} />
         </Routes>
         <Footer />
       </div>

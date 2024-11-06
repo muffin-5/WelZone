@@ -48,7 +48,7 @@ const CounselorRegistration = () => {
       setMessage("Counselor registered successfully! Please login.");
 
       setTimeout(() => {
-        navigate("/");
+        navigate("/"); // Redirect after successful registration
       }, 2000); // 2-second delay for the message to be visible
     } catch (error) {
       setMessage("Registration failed. Please try again.");
@@ -56,20 +56,20 @@ const CounselorRegistration = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-100 to-yellow-200">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#2E3B4E] to-[#6C8FAD]">
       <div className="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-lg">
-        <h2 className="text-3xl font-extrabold text-gray-800 text-center mb-8">
+        <h2 className="text-3xl font-extrabold text-[#4C6A92] text-center mb-8">
           Register as a Counselor
         </h2>
         {message && (
           <div className="text-center mb-6">
-            <p className="text-lg text-green-600 font-semibold">{message}</p>
+            <p className="text-lg text-[#F5A623] font-semibold">{message}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Username
             </label>
             <input
@@ -78,11 +78,11 @@ const CounselorRegistration = () => {
               value={formData.username}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Password
             </label>
             <input
@@ -91,7 +91,7 @@ const CounselorRegistration = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
             <div className="flex items-center mt-2">
               <input
@@ -101,24 +101,26 @@ const CounselorRegistration = () => {
                 onChange={() => setShowPassword(!showPassword)} // Toggle showPassword state
                 className="mr-2"
               />
-              <label htmlFor="showPassword" className="text-sm text-gray-700">
+              <label htmlFor="showPassword" className="text-sm text-[#4C6A92]">
                 Show Password
               </label>
             </div>
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">Email</label>
+            <label className="text-sm font-semibold text-[#4C6A92]">
+              Email
+            </label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Phone Number
             </label>
             <input
@@ -127,11 +129,11 @@ const CounselorRegistration = () => {
               value={formData.phone}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Date of Birth
             </label>
             <input
@@ -140,11 +142,11 @@ const CounselorRegistration = () => {
               value={formData.dateOfBirth}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Specialization
             </label>
             <input
@@ -153,11 +155,11 @@ const CounselorRegistration = () => {
               value={formData.specialization}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Qualification
             </label>
             <input
@@ -166,11 +168,11 @@ const CounselorRegistration = () => {
               value={formData.qualification}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-sm font-semibold text-gray-700">
+            <label className="text-sm font-semibold text-[#4C6A92]">
               Experience (in years)
             </label>
             <input
@@ -179,12 +181,12 @@ const CounselorRegistration = () => {
               value={formData.experience}
               onChange={handleChange}
               required
-              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4C6A92]"
             />
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300"
+            className="w-full py-3 bg-[#4C6A92] text-white font-bold rounded-lg hover:bg-[#3B4C63] transition duration-300"
           >
             Register
           </button>

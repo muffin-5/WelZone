@@ -1,82 +1,96 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaComment, FaBook, FaCalendarAlt, FaChartLine, FaBookOpen, FaUser } from "react-icons/fa";
+import {
+  FaComment,
+  FaBook,
+  FaCalendarAlt,
+  FaChartLine,
+  FaBookOpen,
+  FaUser,
+} from "react-icons/fa";
 import MoodTracker from "./MoodTracker";
 import AffirmationDisplay from "./AffirmationDisplay";
 
 const DashboardUser = () => {
+  const navigate = useNavigate();
 
-  const navigate=useNavigate();
-
-  const handleLogout=()=>{
+  const handleLogout = () => {
     localStorage.clear();
-    navigate('/') 
-  }
+    navigate("/");
+  };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <div className="container mx-auto p-8">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-4xl font-bold mb-8 text-indigo-700">
+    <div className="min-h-screen bg-gradient-to-br from-[#2E3B4E] via-[#6C8FAD] to-[#4C6A92]">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Header Section */}
+        <div className="flex justify-between items-center mb-12">
+          <h2 className="text-4xl font-extrabold text-white">
             Welcome to WelZone Dashboard
           </h2>
-          <button onClick={handleLogout}
-          className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-300"
-          >Logout</button>
-          </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <button
+            onClick={handleLogout}
+            className="bg-[#F5A623] text-white px-4 py-2 rounded-md hover:bg-[#F5A623] transition duration-300"
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* Main Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <DashboardCard
             title="Start Chat"
-            icon={<FaComment className="text-4xl mb-4" />}
+            description="Connect with our AI companion"
+            icon={<FaComment className="text-4xl" />}
+            gradient="from-blue-400 to-blue-600"
             link="/chat"
-            color="bg-blue-500"
-            hoverColor="bg-blue-600"
           />
           <DashboardCard
             title="View Blogs"
-            icon={<FaBook className="text-4xl mb-4" />}
+            description="Explore wellness articles"
+            icon={<FaBook className="text-4xl" />}
+            gradient="from-emerald-400 to-emerald-600"
             link="/blog"
-            color="bg-green-500"
-            hoverColor="bg-green-600"
           />
           <DashboardCard
             title="Book Session"
-            icon={<FaCalendarAlt className="text-4xl mb-4" />}
+            description="Schedule a counseling session"
+            icon={<FaCalendarAlt className="text-4xl" />}
+            gradient="from-purple-400 to-purple-600"
             link="/book-session"
-            color="bg-purple-500"
-            hoverColor="bg-purple-600"
           />
           <DashboardCard
             title="Progress"
-            icon={<FaChartLine className="text-4xl mb-4" />}
+            description="Monitor your wellness journey"
+            icon={<FaChartLine className="text-4xl" />}
+            gradient="from-amber-400 to-amber-600"
             link="/progress"
-            color="bg-yellow-500"
-            hoverColor="bg-yellow-600"
           />
           <DashboardCard
             title="Courses"
-            icon={<FaBookOpen className="text-4xl mb-4" />}
+            description="Self-paced wellness programs"
+            icon={<FaBookOpen className="text-4xl" />}
+            gradient="from-rose-400 to-rose-600"
             link="/courses"
-            color="bg-red-500"
-            hoverColor="bg-yellow-600"
           />
           <DashboardCard
             title="My Profile"
-            icon={<FaUser className="text-4xl mb-4" />}
+            description="Manage your profile settings"
+            icon={<FaUser className="text-4xl" />}
+            gradient="from-teal-400 to-teal-600"
             link="/user/profile"
-            color="bg-teal-500"
-            hoverColor="bg-teal-600"
           />
         </div>
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-2xl font-semibold mb-4 text-indigo-700">
+
+        {/* Wellness Tracking Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-2xl shadow-xl p-6 backdrop-blur-lg bg-opacity-90">
+            <h3 className="text-2xl font-semibold text-[#4C6A92] mb-6">
               Mood Tracker
             </h3>
             <MoodTracker />
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-2xl font-semibold mb-4 text-indigo-700">
+          <div className="bg-white rounded-2xl shadow-xl p-6 backdrop-blur-lg bg-opacity-90">
+            <h3 className="text-2xl font-semibold text-[#4C6A92] mb-6">
               Today's Affirmation
             </h3>
             <AffirmationDisplay />
@@ -87,15 +101,16 @@ const DashboardUser = () => {
   );
 };
 
-const DashboardCard = ({ title, icon, link, color, hoverColor }) => {
+const DashboardCard = ({ title, description, icon, gradient, link }) => {
   return (
     <Link
       to={link}
-      className={`${color} hover:${hoverColor} text-white p-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105`}
+      className={`w-full rounded-2xl bg-gradient-to-r ${gradient} transform transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
     >
-      <div className="flex flex-col items-center justify-center h-full">
-        {icon}
-        <span className="text-xl font-semibold">{title}</span>
+      <div className="p-6 h-full">
+        <div className="text-white opacity-100 mb-4">{icon}</div>
+        <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
+        <p className="text-white text-sm opacity-100">{description}</p>
       </div>
     </Link>
   );
