@@ -36,20 +36,26 @@ public class UserController {
     // Login user
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody User loginUser) {
-        boolean isAuthenticated = userService.authenticateUser(loginUser.getUsername(), loginUser.getPassword());
-
-        if (isAuthenticated) {
+        boolean bool = userService.authenticateUser(loginUser.getUsername(), loginUser.getPassword());
+        if(!bool){
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
+        }
+        User temp=userService.getUserByUsername(loginUser.getUsername());
+        String isAuthenticated=userService.verify(temp);
+        if (!isAuthenticated.equals("false")) {
             User user = userService.getUserByUsername(loginUser.getUsername()); // Assuming this method exists
-
 
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User logged in successfully!");
             response.put("userId", user.getUserId()); // Assuming you have a getUserId method
             response.put("whoLogged", "user");
+            System.out.println(isAuthenticated);
+            response.put("token", isAuthenticated);
 
             AuditLogs auditLogs= auditLogsService.saveAuditLog(user.getUserId(),null,"Logged In","User logged in successfully");
             return ResponseEntity.ok(response);
-        } else {
+        }
+        else {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
         }
     }
