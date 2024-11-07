@@ -28,7 +28,7 @@ public class SessionLogController {
 
     @PostMapping
     public void createSessionLog(@RequestBody SessionLog sessionLog) {
-        sessionLogService.createSessionLog(sessionLog);
+        sessionLogService.createSessionLog(sessionLog.getSessionId(),sessionLog.getLogDetails());
     }
 
     @PutMapping("/{logId}")

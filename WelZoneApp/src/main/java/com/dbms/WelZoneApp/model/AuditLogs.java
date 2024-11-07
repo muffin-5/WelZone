@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class AuditLogs {
     private Long auditId;
     private Long userId;
+    private Long couselorId;
     private String action;
     private LocalDateTime timestamp;
     private String details;

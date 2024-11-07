@@ -1,6 +1,7 @@
 package com.dbms.WelZoneApp.controller;
 
 import com.dbms.WelZoneApp.model.Counselor;
+import com.dbms.WelZoneApp.service.AuditLogsService;
 import com.dbms.WelZoneApp.service.CounselorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +14,17 @@ import java.util.Map;
 @RequestMapping("/api/counselors")
 public class CounselorController {
     private final CounselorService counselorService;
+    private final AuditLogsService auditLogsService;
 
-    public CounselorController(CounselorService counselorService) {
+    public CounselorController(CounselorService counselorService,AuditLogsService auditLogsService) {
         this.counselorService = counselorService;
+        this.auditLogsService=auditLogsService;
     }
 
     @PostMapping
     public ResponseEntity<Void> createCounselor(@RequestBody Counselor counselor) {
         counselorService.addCounselor(counselor);
+        auditLogsService.saveAuditLog(null,counselor.getCounselorId(),"Registered","Counselor registered successfully");
         return ResponseEntity.status(201).build();
     }
 
@@ -39,12 +43,14 @@ public class CounselorController {
     public ResponseEntity<Void> updateCounselor(@PathVariable Long counselorId, @RequestBody Counselor counselor) {
         counselor.setCounselorId(counselorId);
         counselorService.updateCounselor(counselor);
+        auditLogsService.saveAuditLog(null,counselor.getCounselorId(),"Update","Counselor updated successfully");
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{counselorId}")
     public ResponseEntity<Void> deleteCounselor(@PathVariable Long counselorId) {
         counselorService.deleteCounselor(counselorId);
+        auditLogsService.saveAuditLog(null,counselorId,"Delete","Counselor deleted successfully");
         return ResponseEntity.noContent().build();
     }
 
@@ -61,6 +67,7 @@ public class CounselorController {
             response.put("counselorId", counselor.getCounselorId()); // Assuming you have a getCounselorId method
             response.put("whoLogged", "counselor");
 
+            auditLogsService.saveAuditLog(null,counselor.getCounselorId(),"Login","Counselor logged in successfully");
             return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));

@@ -16,13 +16,14 @@ public class AuditLogsService {
     private AuditLogsRepository auditLogsRepository;
 
     // Method to save an audit log entry (Create)
-    public void saveAuditLog(Long userId, String action, String details) {
+    public AuditLogs saveAuditLog(Long userId,Long counselorId, String action, String details) {
         AuditLogs auditLog=new AuditLogs();
         auditLog.setUserId(userId);
+        auditLog.setCouselorId(counselorId);
         auditLog.setAction(action);
         auditLog.setDetails(details);
         auditLog.setTimestamp(LocalDateTime.now());
-        auditLogsRepository.save(auditLog);
+        return auditLogsRepository.save(auditLog);
     }
 
     // Method to get all audit logs (Read)
