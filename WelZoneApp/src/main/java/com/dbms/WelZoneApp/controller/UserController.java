@@ -36,20 +36,42 @@ public class UserController {
     // Login user
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> loginUser(@RequestBody User loginUser) {
+<<<<<<< HEAD
         boolean isAuthenticated = userService.authenticateUser(loginUser.getUsername(), loginUser.getPassword());
 
         if (isAuthenticated) {
             User user = userService.getUserByUsername(loginUser.getUsername()); // Assuming this method exists
 
 
+=======
+        boolean bool = userService.authenticateUser(loginUser.getUsername(), loginUser.getPassword());
+        if(!bool){
+            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
+        }
+        User temp=userService.getUserByUsername(loginUser.getUsername());
+        String isAuthenticated=userService.verify(temp);
+        if (!isAuthenticated.equals("false")) {
+            User user = userService.getUserByUsername(loginUser.getUsername()); // Assuming this method exists
+
+>>>>>>> 46737418a34eb6d8b03160ee99bc0af28e9380fe
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User logged in successfully!");
             response.put("userId", user.getUserId()); // Assuming you have a getUserId method
             response.put("whoLogged", "user");
+<<<<<<< HEAD
 
             AuditLogs auditLogs= auditLogsService.saveAuditLog(user.getUserId(),null,"Logged In","User logged in successfully");
             return ResponseEntity.ok(response);
         } else {
+=======
+            System.out.println(isAuthenticated);
+            response.put("token", isAuthenticated);
+
+            AuditLogs auditLogs= auditLogsService.saveAuditLog(user.getUserId(),null,"Logged In","User logged in successfully");
+            return ResponseEntity.ok(response);
+        }
+        else {
+>>>>>>> 46737418a34eb6d8b03160ee99bc0af28e9380fe
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
         }
     }

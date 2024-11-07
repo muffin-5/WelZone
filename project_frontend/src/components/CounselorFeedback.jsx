@@ -13,7 +13,6 @@ export default function FeedbackPage() {
     if (!Array.isArray(dateArray) || dateArray.length < 5) {
       throw new Error("Invalid date array");
     }
-
     const [year, month, day, hour, minute] = dateArray;
     return new Date(year, month - 1, day, hour, minute);
   };
