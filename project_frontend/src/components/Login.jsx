@@ -31,10 +31,7 @@ const Login = () => {
 
       // Handle successful login
       const responseData = response.data; // Assuming the response contains user/counselor ID
-<<<<<<< HEAD
-=======
       localStorage.setItem("token", responseData.token);
->>>>>>> 46737418a34eb6d8b03160ee99bc0af28e9380fe
 
       if (userType === "user") {
         // Assuming responseData contains userId for users
@@ -46,10 +43,7 @@ const Login = () => {
         localStorage.setItem("whoLogged", "counselor");
       }
       localStorage.setItem("isAuthenticated", "true");
-<<<<<<< HEAD
-=======
-      console.log(responseData.token)
->>>>>>> 46737418a34eb6d8b03160ee99bc0af28e9380fe
+      console.log(responseData.token);
 
       // Redirect based on user type
       if (userType === "user") {
