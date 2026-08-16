@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: welzone-backend
+    runtime: docker
+    repo: https://github.com/muffin-5/WelZone
+    dockerfilePath: WelZoneApp/Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

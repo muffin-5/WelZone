@@ -62,6 +62,9 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
                     || uri.equals("/api/users/register")
                     || uri.equals("/api/counselors");
         }
+        if ("GET".equalsIgnoreCase(method)) {
+            return uri.equals("/") || uri.equals("/error");
+        }
         return false;
     }
 
