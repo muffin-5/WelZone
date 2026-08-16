@@ -2,13 +2,19 @@ package com.dbms.WelZoneApp.repository;
 
 import com.dbms.WelZoneApp.model.Slot;
 import com.dbms.WelZoneApp.model.SlotWithCounselorDetails;
+import com.dbms.WelZoneApp.model.SlotWithUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,10 +45,48 @@ public class SlotRepository {
             "FROM slots s " +
             "JOIN counselors c ON s.counselor_id = c.counselor_id " +
             "WHERE s.id = ?";
+    private static final String FIND_BOOKED_SLOTS_BY_USER_WITH_COUNSELOR_DETAILS_SQL =
+            "SELECT s.id, s.start_time, s.end_time, s.booked, s.counselor_id, s.user_id, " +
+                    "c.username, c.experience, c.qualification, c.specialization, c.rating " +
+                    "FROM slots s " +
+                    "JOIN counselors c ON s.counselor_id = c.counselor_id " +
+                    "WHERE s.user_id = ? AND s.booked = true AND s.end_time >= ?";
+    private static final String FIND_BOOKED_SLOTS_BY_COUNSELOR_WITH_USER_DETAILS_SQL =
+            "SELECT s.id, s.start_time, s.end_time, s.booked, s.counselor_id, s.user_id, " +
+                    "u.username " +
+                    "FROM slots s " +
+                    "LEFT JOIN users u ON s.user_id = u.id " +
+                    "WHERE s.counselor_id = ? AND s.booked = true AND s.end_time >= ?";
+    private static final String FIND_ALL_SLOTS_BY_COUNSELOR_WITH_USER_DETAILS_SQL =
+            "SELECT s.id, s.start_time, s.end_time, s.booked, s.counselor_id, s.user_id, " +
+                    "u.username " +
+                    "FROM slots s " +
+                    "LEFT JOIN users u ON s.user_id = u.id " +
+                    "WHERE s.counselor_id = ?";
+    private static final String DELETE_SLOT_CHAT_SQL = "DELETE FROM chat_messages WHERE session_id = ?";
+    private static final String DELETE_SLOT_FEEDBACK_SQL = "DELETE FROM feedback WHERE sessionId = ?";
+    private static final String DELETE_SLOT_LOG_SQL = "DELETE FROM session_logs WHERE sessionId = ?";
+    private static final String DELETE_SLOT_SQL = "DELETE FROM slots WHERE id = ?";
 
     // Method to create a slot
     public void createSlot(Slot slot) {
-        jdbcTemplate.update(INSERT_SLOT_SQL, slot.getCounselorId(), slot.getUserId(), slot.getStartTime(), slot.getEndTime(), slot.isBooked());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                    INSERT_SLOT_SQL,
+                    Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setObject(1, slot.getCounselorId());
+            ps.setObject(2, slot.getUserId());
+            ps.setObject(3, slot.getStartTime());
+            ps.setObject(4, slot.getEndTime());
+            ps.setBoolean(5, slot.isBooked());
+            return ps;
+        }, keyHolder);
+        Number key = keyHolder.getKey();
+        if (key != null) {
+            slot.setId(key.longValue());
+        }
     }
 
     // Method to find a slot by its ID
@@ -91,6 +135,42 @@ public class SlotRepository {
         );
     }
 
+    // Method to find booked slots for a user with counselor details
+    public List<SlotWithCounselorDetails> findBookedSlotsByUserWithCounselorDetails(Long userId, LocalDateTime currentTime) {
+        return jdbcTemplate.query(
+                FIND_BOOKED_SLOTS_BY_USER_WITH_COUNSELOR_DETAILS_SQL,
+                new Object[]{userId, currentTime},
+                new SlotWithCounselorDetailsRowMapper()
+        );
+    }
+
+    // Method to find booked slots for a counselor with member details
+    public List<SlotWithUserDetails> findBookedSlotsByCounselorWithUserDetails(Long counselorId, LocalDateTime currentTime) {
+        return jdbcTemplate.query(
+                FIND_BOOKED_SLOTS_BY_COUNSELOR_WITH_USER_DETAILS_SQL,
+                new Object[]{counselorId, currentTime},
+                new SlotWithUserDetailsRowMapper()
+        );
+    }
+
+    // Method to find all slots for a counselor (booked + open) with member details
+    public List<SlotWithUserDetails> findAllSlotsByCounselorWithUserDetails(Long counselorId) {
+        return jdbcTemplate.query(
+                FIND_ALL_SLOTS_BY_COUNSELOR_WITH_USER_DETAILS_SQL,
+                new Object[]{counselorId},
+                new SlotWithUserDetailsRowMapper()
+        );
+    }
+
+    // Method to delete a slot (removing dependent rows first)
+    public boolean deleteSlot(Long slotId) {
+        jdbcTemplate.update(DELETE_SLOT_CHAT_SQL, slotId);
+        jdbcTemplate.update(DELETE_SLOT_FEEDBACK_SQL, slotId);
+        jdbcTemplate.update(DELETE_SLOT_LOG_SQL, slotId);
+        int rowsAffected = jdbcTemplate.update(DELETE_SLOT_SQL, slotId);
+        return rowsAffected > 0;
+    }
+
     // Method to find available slots with counselor details including specialization
     public List<SlotWithCounselorDetails> findAvailableSlotsWithCounselorDetails(LocalDateTime currentTime) {
         return jdbcTemplate.query(
@@ -112,6 +192,22 @@ public class SlotRepository {
             slot.setEndTime(rs.getTimestamp("end_time").toLocalDateTime());
             slot.setBooked(rs.getBoolean("booked"));
             return slot;
+        }
+    }
+
+    private static class SlotWithUserDetailsRowMapper implements RowMapper<SlotWithUserDetails> {
+        @Override
+        public SlotWithUserDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SlotWithUserDetails details = new SlotWithUserDetails();
+            details.setSlotId(rs.getLong("id"));
+            details.setStartTime(rs.getTimestamp("start_time").toLocalDateTime());
+            details.setEndTime(rs.getTimestamp("end_time").toLocalDateTime());
+            details.setBooked(rs.getBoolean("booked"));
+            details.setCounselorId(rs.getLong("counselor_id"));
+            long userId = rs.getLong("user_id");
+            details.setUserId(rs.wasNull() ? null : userId);
+            details.setUserName(rs.getString("username"));
+            return details;
         }
     }
 

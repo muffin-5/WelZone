@@ -4,6 +4,7 @@ import com.dbms.WelZoneApp.model.AuditLogs;
 import com.dbms.WelZoneApp.model.SessionLog;
 import com.dbms.WelZoneApp.model.Slot;
 import com.dbms.WelZoneApp.model.SlotWithCounselorDetails;
+import com.dbms.WelZoneApp.model.SlotWithUserDetails;
 import com.dbms.WelZoneApp.service.AuditLogsService;
 import com.dbms.WelZoneApp.service.SessionLogService;
 import com.dbms.WelZoneApp.service.SlotService;
@@ -81,9 +82,9 @@ public class SlotController {
 
     // Get booked slots for a counselor with date >= today
     @GetMapping("/booked/{counselorId}")
-    public ResponseEntity<List<Slot>> getUpcomingBookedSlots(@PathVariable Long counselorId) {
+    public ResponseEntity<List<SlotWithUserDetails>> getUpcomingBookedSlots(@PathVariable Long counselorId) {
         LocalDateTime currentTime = LocalDateTime.now();
-        List<Slot> upcomingSlots = slotService.getBookedSlotsWithEndTime(counselorId, currentTime);
+        List<SlotWithUserDetails> upcomingSlots = slotService.getBookedSlotsByCounselorWithUserDetails(counselorId, currentTime);
 
         if (upcomingSlots.isEmpty()) {
             return ResponseEntity.noContent().build(); // No slots found
@@ -94,9 +95,9 @@ public class SlotController {
 
     // Get booked slots for a user with date >= today
     @GetMapping("/bookedbyme/{userId}")
-    public ResponseEntity<List<Slot>> getUpcomingBookedSlotsByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<SlotWithCounselorDetails>> getUpcomingBookedSlotsByUser(@PathVariable Long userId) {
         LocalDateTime currentTime = LocalDateTime.now();
-        List<Slot> upcomingSlots = slotService.getBookedSlotsWithEndTimeByUser(userId, currentTime);
+        List<SlotWithCounselorDetails> upcomingSlots = slotService.getBookedSlotsByUserWithCounselorDetails(userId, currentTime);
 
         if (upcomingSlots.isEmpty()) {
             return ResponseEntity.noContent().build(); // No slots found
@@ -114,6 +115,28 @@ public class SlotController {
             return ResponseEntity.ok("Slot canceled successfully.");
         } else {
             return ResponseEntity.badRequest().body("Slot cancellation failed.");
+        }
+    }
+
+    // Get all slots (booked + open) for a counselor with member details
+    @GetMapping("/all/{counselorId}")
+    public ResponseEntity<List<SlotWithUserDetails>> getAllSlots(@PathVariable Long counselorId) {
+        List<SlotWithUserDetails> allSlots = slotService.getAllSlotsByCounselorWithUserDetails(counselorId);
+        if (allSlots.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(allSlots);
+    }
+
+    // Delete a slot
+    @DeleteMapping("/{slotId}")
+    public ResponseEntity<String> deleteSlot(@PathVariable Long slotId) {
+        boolean success = slotService.deleteSlot(slotId);
+        if (success) {
+            AuditLogs auditLogs = auditLogsService.saveAuditLog(null, null, "Delete", "Slot deleted");
+            return ResponseEntity.ok("Slot deleted successfully.");
+        } else {
+            return ResponseEntity.badRequest().body("Slot deletion failed.");
         }
     }
 }

@@ -1,46 +1,107 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import {
+  FaGraduationCap,
+  FaClock,
+  FaArrowRight,
+  FaLeaf,
+} from "react-icons/fa";
+import PageShell from "./PageShell";
+
+const COURSE_COLORS = [
+  "bg-sage-100 text-sage-700",
+  "bg-peach-100 text-peach-500",
+  "bg-clay-50 text-clay-400",
+  "bg-cream-200 text-cocoa",
+];
 
 const MyCourses = () => {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState("");
-  const userId = localStorage.getItem("Id"); // Retrieve userId from local storage
+  const userId = localStorage.getItem("Id");
 
   useEffect(() => {
     const fetchMyCourses = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/enrollments/${userId}`);
-        console.log(response.data)
-        setCourses(response.data);
-      } catch (err) {
+        const response = await axios.get(
+          `http://localhost:8080/enrollments/${userId}`
+        );
+        setCourses(Array.isArray(response.data) ? response.data : []);
+      } catch {
         setError("Failed to fetch your courses. Please try again later.");
       }
     };
-
     fetchMyCourses();
   }, [userId]);
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">My Enrolled Courses</h1>
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.length > 0 ? (
-          courses.map((course) => (
-            <div key={course.courseId} className="bg-white shadow-lg rounded-lg p-5">
-              <h2 className="text-xl font-semibold mb-2">{course.title}</h2>
-              <p className="text-gray-700 mb-4">{course.description}</p>
-              <p className="text-green-500 font-semibold">Price: ${course.price}</p>
-              <p className="text-gray-500 text-sm">
-                Enrolled On: {new Date(course.enrollmentDate).toLocaleDateString()}
-              </p>
-            </div>
-          ))
-        ) : (
-          <p className="text-center text-gray-500">You are not enrolled in any courses yet.</p>
-        )}
-      </div>
-    </div>
+    <PageShell
+      eyebrow="Learning"
+      title="My Enrolled Courses"
+      subtitle="Everything you're currently learning, all in one place."
+    >
+      {error && (
+        <div className="rounded-2xl bg-peach-50 border border-peach-200 text-peach-600 text-sm font-semibold px-4 py-3 mb-6">
+          {error}
+        </div>
+      )}
+
+      {courses.length === 0 ? (
+        <div className="welzone-card p-10 text-center">
+          <p className="text-4xl mb-3">🌱</p>
+          <p className="font-bold text-cocoa">
+            You are not enrolled in any courses yet
+          </p>
+          <Link to="/courses" className="welzone-btn-primary mt-4 inline-flex">
+            Browse courses <FaArrowRight />
+          </Link>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {courses.map((course, index) => {
+            const color = COURSE_COLORS[index % COURSE_COLORS.length];
+            return (
+              <div
+                key={course.courseId}
+                className="welzone-card p-6 hover:-translate-y-1 hover:shadow-lift transition-all duration-300"
+              >
+                <span
+                  className={`inline-flex w-12 h-12 rounded-2xl items-center justify-center mb-4 ${color}`}
+                >
+                  <FaGraduationCap className="text-xl" />
+                </span>
+                <h2 className="font-extrabold text-cocoa text-lg">
+                  {course.title}
+                </h2>
+                <p className="text-sm text-stone mt-2 line-clamp-3">
+                  {course.description}
+                </p>
+                <div className="flex items-center justify-between mt-5 pt-4 border-t border-cream-200">
+                  <div className="flex items-center gap-2">
+                    <span className="p-2 rounded-xl bg-sage-100 text-sage-600">
+                      <FaLeaf />
+                    </span>
+                    <div>
+                      <p className="text-xs text-stone">Enrolled on</p>
+                      <p className="text-sm font-bold text-cocoa">
+                        {new Date(course.enrollmentDate).toLocaleDateString(
+                          "en-US",
+                          { month: "short", day: "numeric", year: "numeric" }
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="welzone-chip bg-sage-100 text-sage-700 text-xs">
+                    <FaClock /> In progress
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </PageShell>
   );
 };
 

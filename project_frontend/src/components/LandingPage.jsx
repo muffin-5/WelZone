@@ -1,177 +1,365 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import {
   FaSignInAlt,
   FaUserPlus,
-  FaBook,
-  FaHeadset,
+  FaHeart,
+  FaBookOpen,
+  FaComments,
+  FaCalendarCheck,
+  FaLeaf,
   FaTrophy,
+  FaHeadset,
   FaUsers,
+  FaArrowRight,
+  FaHandSparkles,
+  FaMoon,
 } from "react-icons/fa";
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-[#2E3B4E] to-[#6C8FAD]">
-      {/* Website Name Section */}
+    <div className="min-h-screen bg-cream-100 overflow-hidden">
+      {/* ===== HERO ===== */}
+      <section className="relative">
+        {/* Decorative blobs */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-50 -translate-y-20 translate-x-20" />
+        <div className="absolute top-40 left-0 w-72 h-72 bg-peach-100 rounded-full blur-3xl opacity-60 -translate-x-24" />
 
-      {/* Hero Section */}
-      <div className="container mx-auto px-4 py-12 text-center text-white">
-        {/* Website Name */}
-        <h1 className="text-6xl font-bold mb-4 text-[#F5A623]">WelZone</h1>
+        <div className="relative max-w-7xl mx-auto px-4 md:px-8 pt-16 md:pt-24 pb-12">
+          {/* Centered copy */}
+          <div className="text-center max-w-3xl mx-auto animate-fadeUp">
+            <span className="welzone-chip bg-sage-100 text-sage-700 mb-6">
+              <FaLeaf className="text-sage-500" />
+              Your safe space for mental wellness
+            </span>
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.08] text-cocoa">
+              Welcome to{" "}
+              <span className="text-sage-500">WelZone</span> – your mental
+              wellness counselling space
+            </h1>
+            <p className="mt-6 text-lg text-stone max-w-2xl mx-auto">
+              Transform your life by building a proactive culture of care,
+              resilience, and well-being with expert counsellors, mood
+              tracking, and a supportive community.
+            </p>
 
-        <h2 className="text-5xl font-bold mb-4 text-[#F5A623]">
-          Your mental wellness counselling space
-        </h2>
-        <p className="text-lg mb-8">
-          Transform your organization by building a proactive culture of care,
-          resilience, and well-being.
-        </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <button
+                onClick={() => navigate("/login")}
+                className="welzone-btn-primary text-lg"
+              >
+                <FaSignInAlt /> Get Started
+              </button>
+              <button
+                onClick={() => navigate("/register")}
+                className="welzone-btn-ghost text-lg"
+              >
+                <FaUserPlus /> Join as Member
+              </button>
+            </div>
 
-        <div className="flex justify-center space-x-6 mb-12">
-          <button
-            onClick={() => navigate("/login")}
-            className="flex items-center justify-center px-6 py-3 bg-[#4C6A92] text-white rounded-full shadow-lg hover:bg-[#3B4C63] transition duration-300"
-          >
-            <FaSignInAlt className="mr-2" />
-            Login
-          </button>
-          <button
-            onClick={() => navigate("/register")}
-            className="flex items-center justify-center px-6 py-3 bg-[#F5A623] text-white rounded-full shadow-lg hover:bg-[#D88D1E] transition duration-300"
-          >
-            <FaUserPlus className="mr-2" />
-            Register
-          </button>
+            {/* mini stats */}
+            <div className="mt-10 grid grid-cols-3 gap-4 max-w-md mx-auto">
+              <MiniStat number="24/7" label="Support" />
+              <MiniStat number="1000+" label="Experts" />
+              <MiniStat number="30L+" label="Sessions" />
+            </div>
+          </div>
+
+          {/* Centered illustration card */}
+          <div className="relative mt-16 animate-fadeUp max-w-md mx-auto" style={{ animationDelay: "150ms" }}>
+            <div className="welzone-card p-8 shadow-lift rotate-1">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <p className="text-xs font-bold text-peach-400 uppercase tracking-widest">
+                    Daily Check-in
+                  </p>
+                  <p className="text-xl font-extrabold text-cocoa">
+                    How are you today?
+                  </p>
+                </div>
+                <span className="text-4xl animate-breathe">🌿</span>
+              </div>
+              <div className="grid grid-cols-5 gap-2">
+                {["😊", "😟", "😐", "😔", "😌"].map((e, i) => (
+                  <div
+                    key={i}
+                    className={`flex flex-col items-center py-2 rounded-2xl ${
+                      i === 0 ? "bg-sage-100 ring-2 ring-sage-300" : "bg-cream-50"
+                    }`}
+                  >
+                    <span className="text-2xl">{e}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-6 rounded-2xl bg-sage-50 p-4 flex items-center gap-3">
+                <FaMoon className="text-peach-400 text-xl" />
+                <div>
+                  <p className="text-sm font-bold text-sage-800">
+                    Sleep quality: 4/5
+                  </p>
+                  <p className="text-xs text-stone">
+                    Log your rest to keep insights glowing
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating chips */}
+            <div className="absolute -left-6 top-8 welzone-card px-4 py-3 shadow-soft animate-float hidden sm:block">
+              <p className="text-sm font-bold text-cocoa flex items-center gap-2">
+                <FaCalendarCheck className="text-sage-500" /> 2 sessions booked
+              </p>
+            </div>
+            <div
+              className="absolute -right-4 bottom-10 welzone-card px-4 py-3 shadow-soft animate-floatSlow hidden sm:block"
+            >
+              <p className="text-sm font-bold text-cocoa flex items-center gap-2">
+                <FaHeart className="text-peach-400" /> Mood logged today
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Solutions Section */}
-      <div className="bg-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6 text-[#4C6A92]">
-            Our Solutions
-          </h2>
-          <p className="text-gray-600 mb-10">
-            A truly comprehensive suite of products for your people's care,
-            well-being, and belongingness.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <SolutionCard
-              title="Employee Assistance"
-              description="24/7 access to expert psychologists for all employees."
-              icon={
-                <FaHeadset className="text-[#F5A623] text-5xl mb-4 mx-auto" />
-              }
+      {/* ===== SOLUTIONS ===== */}
+      <section className="py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <SectionHeading
+            eyebrow="Our Solutions"
+            title="A complete suite for your well-being"
+            subtitle="Everything you need to feel supported, understood, and empowered."
+          />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <FeatureCard
+              icon={<FaHeadset className="text-3xl text-peach-400" />}
+              title="24/7 Counselling"
+              desc="Round-the-clock access to expert psychologists for employees and students alike."
+              color="bg-peach-50"
             />
-            <SolutionCard
-              title="Career Counseling"
-              description="Guidance and support for students to excel in their careers."
-              icon={<FaBook className="text-[#F5A623] text-5xl mb-4 mx-auto" />}
+            <FeatureCard
+              icon={<FaHeart className="text-3xl text-sage-500" />}
+              title="Mood & Sleep Tracking"
+              desc="Log how you feel and how you slept to discover patterns in your wellbeing."
+              color="bg-sage-50"
             />
-            <SolutionCard
-              title="Engagement Programs"
-              description="Interactive sessions to boost team morale and productivity."
-              icon={
-                <FaUsers className="text-[#F5A623] text-5xl mb-4 mx-auto" />
-              }
+            <FeatureCard
+              icon={<FaCalendarCheck className="text-3xl text-clay-400" />}
+              title="Session Booking"
+              desc="Browse counsellors, view availability on a calendar, and book in seconds."
+              color="bg-clay-50"
+            />
+            <FeatureCard
+              icon={<FaBookOpen className="text-3xl text-sage-400" />}
+              title="Courses & Blogs"
+              desc="Self-paced wellness programs and articles written by caring professionals."
+              color="bg-cream-200"
             />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Impact Statistics Section */}
-      <div className="bg-gradient-to-r from-[#F0F0F0] to-[#D9D9D9] py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6 text-[#4C6A92]">
-            Creating Waves of Impact
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <ImpactStat
-              number="30L+"
-              description="Therapy Sessions Conducted"
+      {/* ===== HOW IT WORKS ===== */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <SectionHeading
+            eyebrow="How it works"
+            title="Three steps to a calmer mind"
+            subtitle="Getting started with WelZone is effortless."
+          />
+          <div className="grid md:grid-cols-3 gap-8">
+            <Step
+              num="01"
+              icon={<FaUserPlus className="text-sage-500" />}
+              title="Create your account"
+              desc="Register as a member or a counsellor in under two minutes."
             />
-            <ImpactStat number="1000+" description="Qualified Experts" />
-            <ImpactStat number="10,000+" description="Lives Saved" />
+            <Step
+              num="02"
+              icon={<FaComments className="text-sage-500" />}
+              title="Track & connect"
+              desc="Log your mood, rate your sleep, and chat with your counsellor."
+            />
+            <Step
+              num="03"
+              icon={<FaHandSparkles className="text-sage-500" />}
+              title="Grow your wellbeing"
+              desc="Follow courses, read insights, and watch your progress bloom."
+            />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Awards Section */}
-      <div className="bg-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6 text-[#4C6A92]">
-            Our Achievements
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* ===== IMPACT ===== */}
+      <section className="py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="welzone-card overflow-hidden shadow-lift">
+            <div className="bg-gradient-to-br from-sage-500 to-sage-700 p-10 md:p-14 text-center text-white">
+              <h2 className="text-3xl md:text-4xl font-extrabold">
+                Creating Waves of Impact
+              </h2>
+              <p className="mt-3 text-sage-100 max-w-xl mx-auto">
+                Every session, every log, and every conversation moves us closer
+                to a world that cares about mental health.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
+                <ImpactStat number="30L+" label="Therapy Sessions" />
+                <ImpactStat number="1000+" label="Qualified Experts" />
+                <ImpactStat number="10,000+" label="Lives Touched" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== AWARDS ===== */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <SectionHeading
+            eyebrow="Achievements"
+            title="Recognised for making a difference"
+            subtitle="We are honoured to be celebrated for our work in mental well-being."
+          />
+          <div className="grid md:grid-cols-3 gap-6">
             <AwardCard
+              icon={<FaTrophy className="text-yellow-400 text-3xl" />}
               title="National Startup Awards"
-              description="Recognized for Health & Wellness."
-              icon={
-                <FaTrophy className="text-yellow-500 text-5xl mb-4 mx-auto" />
-              }
+              desc="Recognised for Health & Wellness innovation."
             />
             <AwardCard
+              icon={<FaTrophy className="text-yellow-400 text-3xl" />}
               title="IHW Gold Award"
-              description="Excellence in Mental Well-being."
-              icon={
-                <FaTrophy className="text-yellow-500 text-5xl mb-4 mx-auto" />
-              }
+              desc="Excellence in Mental Well-being initiatives."
             />
             <AwardCard
+              icon={<FaTrophy className="text-yellow-400 text-3xl" />}
               title="Forbes 30 Under 30"
-              description="Impactful leaders in Asia."
-              icon={
-                <FaTrophy className="text-yellow-500 text-5xl mb-4 mx-auto" />
-              }
+              desc="Impactful leaders building care-first communities."
             />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Contact Section */}
-      <div className="bg-[#4C6A92] py-16 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">Get In Touch</h2>
-          <p className="mb-8">
-            Need a safe space to talk or want to know more? Connect with us
-            today.
-          </p>
-          <button
-            onClick={() => navigate("/contact")}
-            className="px-8 py-3 bg-white text-[#4C6A92] rounded-full shadow-lg hover:bg-gray-100 transition duration-300"
-          >
-            Contact Us: 9876543210
-          </button>
+      {/* ===== CTA ===== */}
+      <section className="py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="welzone-card bg-gradient-to-br from-peach-50 to-cream-100 p-10 md:p-16 text-center">
+            <FaUsers className="text-4xl text-peach-400 mx-auto mb-4" />
+            <h2 className="text-3xl md:text-4xl font-extrabold text-cocoa">
+              Need a safe space to talk?
+            </h2>
+            <p className="mt-3 text-stone max-w-xl mx-auto">
+              Whether you want support or want to offer it, connect with the
+              WelZone community today.
+            </p>
+            <div className="mt-8 flex justify-center gap-4">
+              <button
+                onClick={() => navigate("/register")}
+                className="welzone-btn-primary text-lg"
+              >
+                Start your journey <FaArrowRight />
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };
 
-// Reusable Card Components
-const SolutionCard = ({ title, description, icon }) => (
-  <div className="bg-white p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300 text-center">
-    {icon}
-    <h3 className="text-xl font-bold text-[#4C6A92] mb-2">{title}</h3>
-    <p className="text-gray-600">{description}</p>
+const MiniStat = ({ number, label }) => (
+  <div className="rounded-2xl bg-white shadow-card px-3 py-4 text-center">
+    <p className="text-xl font-extrabold text-sage-600">{number}</p>
+    <p className="text-xs text-stone">{label}</p>
   </div>
 );
 
-const ImpactStat = ({ number, description }) => (
-  <div className="text-center">
-    <h3 className="text-4xl font-bold text-[#4C6A92]">{number}</h3>
-    <p className="text-gray-600">{description}</p>
+MiniStat.propTypes = {
+  number: PropTypes.string,
+  label: PropTypes.string,
+};
+
+const SectionHeading = ({ eyebrow, title, subtitle }) => (
+  <div className="text-center max-w-2xl mx-auto mb-12">
+    <p className="text-sm font-bold text-peach-400 uppercase tracking-widest">
+      {eyebrow}
+    </p>
+    <h2 className="text-3xl md:text-4xl font-extrabold text-cocoa mt-2">
+      {title}
+    </h2>
+    {subtitle && <p className="text-stone mt-3">{subtitle}</p>}
   </div>
 );
 
-const AwardCard = ({ title, description, icon }) => (
-  <div className="bg-white p-8 rounded-lg shadow-xl hover:shadow-2xl transition duration-300 text-center">
-    {icon}
-    <h3 className="text-xl font-bold text-[#4C6A92] mb-2">{title}</h3>
-    <p className="text-gray-600">{description}</p>
+SectionHeading.propTypes = {
+  eyebrow: PropTypes.string,
+  title: PropTypes.string,
+  subtitle: PropTypes.string,
+};
+
+const FeatureCard = ({ icon, title, desc, color }) => (
+  <div className="welzone-card p-6 hover:-translate-y-1 hover:shadow-lift transition-all duration-300">
+    <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center mb-4`}>
+      {icon}
+    </div>
+    <h3 className="text-lg font-extrabold text-cocoa">{title}</h3>
+    <p className="text-sm text-stone mt-1.5">{desc}</p>
   </div>
 );
+
+FeatureCard.propTypes = {
+  icon: PropTypes.node,
+  title: PropTypes.string,
+  desc: PropTypes.string,
+  color: PropTypes.string,
+};
+
+const Step = ({ num, icon, title, desc }) => (
+  <div className="relative text-center px-6 py-8">
+    <div className="w-14 h-14 mx-auto rounded-2xl bg-sage-50 flex items-center justify-center mb-4">
+      {icon}
+    </div>
+    <span className="absolute top-2 right-2 text-5xl font-extrabold text-cream-300">
+      {num}
+    </span>
+    <h3 className="text-lg font-extrabold text-cocoa">{title}</h3>
+    <p className="text-sm text-stone mt-1.5">{desc}</p>
+  </div>
+);
+
+Step.propTypes = {
+  num: PropTypes.string,
+  icon: PropTypes.node,
+  title: PropTypes.string,
+  desc: PropTypes.string,
+};
+
+const ImpactStat = ({ number, label }) => (
+  <div className="rounded-3xl bg-white/10 backdrop-blur px-6 py-6">
+    <p className="text-4xl font-extrabold">{number}</p>
+    <p className="text-sage-100 text-sm mt-1">{label}</p>
+  </div>
+);
+
+ImpactStat.propTypes = {
+  number: PropTypes.string,
+  label: PropTypes.string,
+};
+
+const AwardCard = ({ icon, title, desc }) => (
+  <div className="welzone-card p-6 text-center hover:-translate-y-1 hover:shadow-lift transition-all duration-300">
+    <div className="flex justify-center mb-3">{icon}</div>
+    <h3 className="font-extrabold text-cocoa">{title}</h3>
+    <p className="text-sm text-stone mt-1">{desc}</p>
+  </div>
+);
+
+AwardCard.propTypes = {
+  icon: PropTypes.node,
+  title: PropTypes.string,
+  desc: PropTypes.string,
+};
 
 export default LandingPage;

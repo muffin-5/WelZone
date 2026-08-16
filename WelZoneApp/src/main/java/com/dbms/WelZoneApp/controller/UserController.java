@@ -1,10 +1,12 @@
 package com.dbms.WelZoneApp.controller;
 
 import com.dbms.WelZoneApp.model.AuditLogs;
+import com.dbms.WelZoneApp.model.LoginRequest;
 import com.dbms.WelZoneApp.model.User;
 import com.dbms.WelZoneApp.repository.AuditLogsRepository;
 import com.dbms.WelZoneApp.service.AuditLogsService;
 import com.dbms.WelZoneApp.service.UserService;
+import com.dbms.WelZoneApp.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,10 +19,12 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final AuditLogsService auditLogsService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, AuditLogsService auditLogsService) {
+    public UserController(UserService userService, AuditLogsService auditLogsService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.auditLogsService=auditLogsService;
+        this.jwtUtil = jwtUtil;
     }
 
 
@@ -35,43 +39,22 @@ public class UserController {
 
     // Login user
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody User loginUser) {
-<<<<<<< HEAD
-        boolean isAuthenticated = userService.authenticateUser(loginUser.getUsername(), loginUser.getPassword());
+    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody LoginRequest loginRequest) {
+        boolean isAuthenticated = userService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
 
         if (isAuthenticated) {
-            User user = userService.getUserByUsername(loginUser.getUsername()); // Assuming this method exists
+            User user = userService.getUserByUsername(loginRequest.getUsername()); // Assuming this method exists
 
 
-=======
-        boolean bool = userService.authenticateUser(loginUser.getUsername(), loginUser.getPassword());
-        if(!bool){
-            return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
-        }
-        User temp=userService.getUserByUsername(loginUser.getUsername());
-        String isAuthenticated=userService.verify(temp);
-        if (!isAuthenticated.equals("false")) {
-            User user = userService.getUserByUsername(loginUser.getUsername()); // Assuming this method exists
-
->>>>>>> 46737418a34eb6d8b03160ee99bc0af28e9380fe
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User logged in successfully!");
             response.put("userId", user.getUserId()); // Assuming you have a getUserId method
             response.put("whoLogged", "user");
-<<<<<<< HEAD
+            response.put("token", jwtUtil.generateToken(user.getUserId(), "USER"));
 
             AuditLogs auditLogs= auditLogsService.saveAuditLog(user.getUserId(),null,"Logged In","User logged in successfully");
             return ResponseEntity.ok(response);
         } else {
-=======
-            System.out.println(isAuthenticated);
-            response.put("token", isAuthenticated);
-
-            AuditLogs auditLogs= auditLogsService.saveAuditLog(user.getUserId(),null,"Logged In","User logged in successfully");
-            return ResponseEntity.ok(response);
-        }
-        else {
->>>>>>> 46737418a34eb6d8b03160ee99bc0af28e9380fe
             return ResponseEntity.status(401).body(Map.of("message", "Invalid username or password!"));
         }
     }

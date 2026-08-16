@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaPencilAlt } from "react-icons/fa";
-import Header from "./Header";
+import {
+  FaPencilAlt,
+  FaTimes,
+  FaClock,
+  FaBookOpen,
+  FaCheckCircle,
+} from "react-icons/fa";
+import PageShell from "./PageShell";
 
 const BlogByCounselor = () => {
   const [blogs, setBlogs] = useState([]);
   const [error, setError] = useState(null);
-  const [showForm, setShowForm] = useState(false); // State to toggle form visibility
+  const [showForm, setShowForm] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [formMessage, setFormMessage] = useState("");
-  const counselorId = localStorage.getItem("Id"); // Retrieve counselor ID from local storage
+  const [isError, setIsError] = useState(false);
+  const counselorId = localStorage.getItem("Id");
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -24,119 +31,168 @@ const BlogByCounselor = () => {
           setBlogs([]);
           setError("No blogs found.");
         }
-      } catch (err) {
+      } catch {
         setError("Failed to fetch blogs. Please try again later.");
       }
     };
-
     fetchBlogs();
   }, [counselorId]);
 
   const handleCreateBlog = async (e) => {
     e.preventDefault();
-
     const newBlog = {
       counselorId: counselorId,
       title: newTitle,
       content: newContent,
     };
-
     try {
       const response = await axios.post(
         "http://localhost:8080/blogs/create",
         newBlog
       );
       setFormMessage("Blog created successfully!");
+      setIsError(false);
       setBlogs((prevBlogs) => [...prevBlogs, response.data]);
       setNewTitle("");
       setNewContent("");
-      setShowForm(false);
+      setTimeout(() => {
+        setShowForm(false);
+        setFormMessage("");
+      }, 1200);
     } catch (error) {
       console.error("Error creating blog:", error);
+      setIsError(true);
       setFormMessage("Failed to create blog. Please try again.");
     }
   };
 
   return (
-    <>
-      <Header />
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Blogs by Counselor</h1>
-        {error && <p className="text-red-500">{error}</p>}
-        <ul className="space-y-4">
-          {blogs.length > 0 ? (
-            blogs.map((blog) => (
-              <li key={blog.id} className="border p-4 rounded shadow">
-                <h2 className="text-xl font-semibold">{blog.title}</h2>
-                <p className="text-gray-700">{blog.content}</p>
-                <p className="text-sm text-gray-500">
-                  Published on: {new Date(blog.createdAt).toLocaleDateString()}
-                </p>
-              </li>
-            ))
-          ) : (
-            <p>No blogs available.</p>
-          )}
-        </ul>
-
-        {/* Floating Button */}
+    <PageShell
+      eyebrow="Counsellor"
+      title="My Blogs"
+      subtitle="Share your expertise and write wellness articles for the community."
+      action={
         <button
-          className="fixed bottom-15 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 transition duration-300"
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => setShowForm((v) => !v)}
+          className="welzone-btn-primary"
         >
-          <FaPencilAlt size={20} />
+          <FaPencilAlt /> Write a blog
         </button>
+      }
+    >
+      {error && (
+        <div className="rounded-2xl bg-peach-50 border border-peach-200 text-peach-600 text-sm font-semibold px-4 py-3 mb-6">
+          {error}
+        </div>
+      )}
 
-        {/* Blog Creation Form */}
-        {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-              <h2 className="text-2xl font-bold mb-4">Create New Blog</h2>
+      {/* Create form modal */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-cocoa/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-4xl shadow-lift w-full max-w-lg overflow-hidden animate-pop">
+            <div className="p-7">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-extrabold text-cocoa">
+                  Create New Blog
+                </h2>
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="w-9 h-9 rounded-full bg-cream-100 flex items-center justify-center text-stone hover:text-peach-500 transition"
+                >
+                  <FaTimes />
+                </button>
+              </div>
+
               {formMessage && (
-                <p className="text-green-500 mb-4">{formMessage}</p>
+                <div
+                  className={`mb-4 rounded-2xl px-4 py-3 text-sm font-semibold text-center flex items-center justify-center gap-2 ${
+                    isError
+                      ? "bg-peach-50 border border-peach-200 text-peach-600"
+                      : "bg-sage-50 border border-sage-200 text-sage-700"
+                  }`}
+                >
+                  {!isError && <FaCheckCircle />}
+                  {formMessage}
+                </div>
               )}
-              <form onSubmit={handleCreateBlog} className="space-y-4">
-                <div className="flex flex-col">
-                  <label className="text-sm font-semibold text-gray-700">
-                    Title:
-                  </label>
+
+              <form onSubmit={handleCreateBlog} className="space-y-5">
+                <div>
+                  <label className="welzone-label">Title</label>
                   <input
                     type="text"
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     required
-                    className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="A catchy, calming title"
+                    className="welzone-input"
                   />
                 </div>
-                <div className="flex flex-col">
-                  <label className="text-sm font-semibold text-gray-700">
-                    Content:
-                  </label>
+                <div>
+                  <label className="welzone-label">Content</label>
                   <textarea
                     value={newContent}
                     onChange={(e) => setNewContent(e.target.value)}
                     required
-                    className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Share your wisdom, tips, and encouragement..."
+                    rows={8}
+                    className="welzone-input resize-none"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300"
-                >
-                  Create Blog
+                <button type="submit" className="welzone-btn-primary w-full">
+                  <FaBookOpen /> Publish Blog
                 </button>
               </form>
-              <button
-                className="mt-4 text-black-500 font-bold hover:underline"
-                onClick={() => setShowForm(false)}
-              >
-                Cancel
-              </button>
             </div>
           </div>
-        )}
-      </div>
-    </>
+        </div>
+      )}
+
+      {/* Blog list */}
+      {blogs.length === 0 && !error ? (
+        <div className="welzone-card p-10 text-center">
+          <p className="text-4xl mb-3">✍️</p>
+          <p className="font-bold text-cocoa">You haven&apos;t written any blogs yet</p>
+          <p className="text-sm text-stone mt-1">
+            Click &ldquo;Write a blog&rdquo; to share your first post.
+          </p>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 gap-5">
+          {blogs.map((blog) => (
+            <div
+              key={blog.id}
+              className="welzone-card p-6 hover:-translate-y-1 hover:shadow-lift transition-all duration-300"
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <span className="p-3 rounded-2xl bg-sage-100 text-sage-600">
+                  <FaBookOpen className="text-xl" />
+                </span>
+                <span className="welzone-chip bg-sage-100 text-sage-700 text-xs">
+                  Published
+                </span>
+              </div>
+              <h2 className="font-extrabold text-cocoa text-lg line-clamp-2">
+                {blog.title}
+              </h2>
+              <p className="text-sm text-stone mt-2 line-clamp-3">
+                {blog.content}
+              </p>
+              <p className="flex items-center gap-1.5 text-xs text-stone mt-4">
+                <FaClock className="text-peach-400" />
+                {blog.createdAt
+                  ? new Date(blog.createdAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  : "Recently"}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </PageShell>
   );
 };
 

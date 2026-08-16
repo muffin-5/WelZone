@@ -1,26 +1,35 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { FaUser, FaLock, FaUsers, FaUserTie } from "react-icons/fa"; // Import icons from react-icons
+import { useNavigate, Link } from "react-router-dom";
+import {
+  FaUser,
+  FaLock,
+  FaUsers,
+  FaUserTie,
+  FaLeaf,
+  FaArrowLeft,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
 
 const Login = () => {
-  const [userType, setUserType] = useState(""); // To track selected user type
-  const [username, setUsername] = useState(""); // To track username input
-  const [password, setPassword] = useState(""); // To track password input
-  const [errorMessage, setErrorMessage] = useState(""); // To track error messages
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [userType, setUserType] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleUserTypeSelection = (type) => {
-    setUserType(type); // Set user type based on selection
-    setUsername(""); // Clear username field
-    setPassword(""); // Clear password field
-    setErrorMessage(""); // Clear error message
+    setUserType(type);
+    setUsername("");
+    setPassword("");
+    setErrorMessage("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const baseUrl = "http://localhost:8080"; // Adjust the port number if necessary
+    const baseUrl = "http://localhost:8080";
     const endpoint =
       userType === "user"
         ? `${baseUrl}/api/users/login`
@@ -28,98 +37,153 @@ const Login = () => {
 
     try {
       const response = await axios.post(endpoint, { username, password });
-
-      // Handle successful login
-      const responseData = response.data; // Assuming the response contains user/counselor ID
-      localStorage.setItem("token", responseData.token);
+      const responseData = response.data;
 
       if (userType === "user") {
-        // Assuming responseData contains userId for users
-        localStorage.setItem("Id", responseData.userId); // Store the user ID
+        localStorage.setItem("Id", responseData.userId);
         localStorage.setItem("whoLogged", "user");
       } else if (userType === "counselor") {
-        // Assuming responseData contains counselorId for counselors
-        localStorage.setItem("Id", responseData.counselorId); // Store the counselor ID
+        localStorage.setItem("Id", responseData.counselorId);
         localStorage.setItem("whoLogged", "counselor");
       }
       localStorage.setItem("isAuthenticated", "true");
-      console.log(responseData.token);
-
-      // Redirect based on user type
-      if (userType === "user") {
-        navigate("/dashboarduser"); // Redirect to User Dashboard
-      } else {
-        navigate("/dashboardcounsellor"); // Redirect to Counselor Dashboard
+      if (responseData.token) {
+        localStorage.setItem("token", responseData.token);
       }
-    } catch (error) {
+
+      if (userType === "user") {
+        navigate("/dashboarduser");
+      } else {
+        navigate("/dashboardcounsellor");
+      }
+    } catch {
       setErrorMessage("Invalid credentials. Please try again.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-[#2E3B4E] to-[#6C8FAD]">
-      <div className="bg-white p-8 rounded-xl shadow-xl w-full max-w-md space-y-6">
-        <h2 className="text-3xl font-bold text-[#4C6A92] text-center flex items-center justify-center">
-          <FaLock className="mr-2" /> Login
-        </h2>
+    <div className="min-h-screen bg-cream-100 flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Decorative blobs */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-sage-100 rounded-full blur-3xl opacity-70 -translate-x-20 -translate-y-20" />
+      <div className="absolute bottom-0 right-0 w-72 h-72 bg-peach-100 rounded-full blur-3xl opacity-70 translate-x-20 translate-y-20" />
 
-        {/* User Type Selection */}
-        {!userType ? (
-          <div className="space-y-4 text-center">
-            <h3 className="text-lg font-medium text-[#4C6A92]">
-              Select User Type
-            </h3>
-            <div className="flex justify-center space-x-4">
+      <div className="relative w-full max-w-md animate-fadeUp">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-stone hover:text-sage-600 mb-6"
+        >
+          <FaArrowLeft /> Back to home
+        </Link>
+
+        <div className="welzone-card shadow-lift p-8">
+          <div className="text-center mb-8">
+            <span className="w-14 h-14 mx-auto rounded-2xl bg-sage-500 text-white flex items-center justify-center mb-4 shadow-glow">
+              <FaLeaf className="text-2xl" />
+            </span>
+            <h2 className="text-2xl font-extrabold text-cocoa">Welcome back</h2>
+            <p className="text-sm text-stone mt-1">
+              {!userType
+                ? "Choose how you want to sign in"
+                : `Signing in as ${userType}`}
+            </p>
+          </div>
+
+          {/* User type selection */}
+          {!userType ? (
+            <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => handleUserTypeSelection("user")}
-                className="px-6 py-3 bg-[#4C6A92] text-white rounded-lg hover:bg-[#3B4C63] transition duration-300 flex items-center"
+                className="group flex flex-col items-center gap-3 rounded-3xl bg-sage-50 border-2 border-sage-100 hover:border-sage-300 p-8 transition hover:-translate-y-1"
               >
-                <FaUsers className="mr-2" /> User
+                <span className="w-14 h-14 rounded-2xl bg-sage-200 text-sage-700 flex items-center justify-center group-hover:scale-110 transition">
+                  <FaUsers className="text-2xl" />
+                </span>
+                <span className="font-bold text-cocoa">Member</span>
+                <span className="text-xs text-stone">I need support</span>
               </button>
               <button
                 onClick={() => handleUserTypeSelection("counselor")}
-                className="px-6 py-3 bg-[#F5A623] text-white rounded-lg hover:bg-[#D88D1E] transition duration-300 flex items-center"
+                className="group flex flex-col items-center gap-3 rounded-3xl bg-peach-50 border-2 border-peach-100 hover:border-peach-300 p-8 transition hover:-translate-y-1"
               >
-                <FaUserTie className="mr-2" /> Counselor
+                <span className="w-14 h-14 rounded-2xl bg-peach-100 text-peach-400 flex items-center justify-center group-hover:scale-110 transition">
+                  <FaUserTie className="text-2xl" />
+                </span>
+                <span className="font-bold text-cocoa">Counsellor</span>
+                <span className="text-xs text-stone">I provide care</span>
               </button>
             </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {errorMessage && (
+                <div className="rounded-2xl bg-peach-50 border border-peach-200 text-peach-600 text-sm font-semibold px-4 py-3">
+                  {errorMessage}
+                </div>
+              )}
+
+              <div>
+                <label className="welzone-label">Username</label>
+                <div className="relative">
+                  <FaUser className="absolute left-4 top-1/2 -translate-y-1/2 text-stone/50" />
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    placeholder="Enter your username"
+                    className="welzone-input pl-11"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="welzone-label">Password</label>
+                <div className="relative">
+                  <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-stone/50" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="Enter your password"
+                    className="welzone-input pl-11 pr-11"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-stone/50 hover:text-sage-600"
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" className="welzone-btn-primary w-full">
+                Sign In
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleUserTypeSelection("")}
+                className="w-full text-sm font-semibold text-stone hover:text-sage-600"
+              >
+                ← Change account type
+              </button>
+            </form>
+          )}
+
+          {/* Register link */}
+          <div className="mt-6 pt-6 border-t border-cream-200 text-center">
+            <p className="text-sm text-stone">
+              New to WelZone?{" "}
+              <Link
+                to="/register"
+                className="font-bold text-sage-600 hover:text-sage-700"
+              >
+                Create an account
+              </Link>
+            </p>
           </div>
-        ) : (
-          // Login Form
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {errorMessage && (
-              <div className="text-red-500 text-center">{errorMessage}</div>
-            )}
-            <div className="flex items-center border-b border-gray-300 py-2">
-              <FaUser className="text-gray-500 mr-2" />
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                placeholder="Username"
-                className="w-full p-2 border-none focus:outline-none"
-              />
-            </div>
-            <div className="flex items-center border-b border-gray-300 py-2">
-              <FaLock className="text-gray-500 mr-2" />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Password"
-                className="w-full p-2 border-none focus:outline-none"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full py-3 bg-[#4C6A92] text-white rounded-lg hover:bg-[#3B4C63] transition duration-300 flex justify-center items-center"
-            >
-              <FaLock className="mr-2" /> Login
-            </button>
-          </form>
-        )}
+        </div>
       </div>
     </div>
   );

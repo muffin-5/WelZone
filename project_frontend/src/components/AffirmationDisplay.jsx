@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { FaQuoteLeft, FaQuoteRight, FaSyncAlt } from "react-icons/fa";
 
-// List of positive affirmations
 const affirmations = [
   "You are doing the best you can, and that is enough.",
   "Your feelings are valid, and it's okay to take time for yourself.",
@@ -15,22 +15,40 @@ const affirmations = [
 ];
 
 const AffirmationDisplay = () => {
-  const [randomAffirmation, setRandomAffirmation] = useState("");
+  const [index, setIndex] = useState(0);
+  const [fading, setFading] = useState(false);
 
-  // Generate a random affirmation on component mount
   useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * affirmations.length);
-    setRandomAffirmation(affirmations[randomIndex]);
+    setIndex(Math.floor(Math.random() * affirmations.length));
   }, []);
 
+  const nextAffirmation = () => {
+    setFading(true);
+    setTimeout(() => {
+      setIndex((i) => (i + 1) % affirmations.length);
+      setFading(false);
+    }, 250);
+  };
+
   return (
-    <div className="affirmation-display bg-gray-100 p-6 rounded-lg shadow-md max-w-2xl mx-auto mt-10">
-      <h2 className="text-2xl font-bold text-center mb-4">
-        Your Daily Affirmation
-      </h2>
-      <p className="text-center text-lg text-gray-700 italic">
-        "{randomAffirmation}"
-      </p>
+    <div className="text-center">
+      <div className="relative rounded-3xl bg-gradient-to-br from-peach-50 to-cream-100 p-8">
+        <FaQuoteLeft className="text-peach-200 text-3xl absolute top-4 left-4" />
+        <FaQuoteRight className="text-peach-200 text-3xl absolute bottom-4 right-4" />
+        <p
+          className={`text-lg text-cocoa italic leading-relaxed transition-opacity duration-300 ${
+            fading ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          &ldquo;{affirmations[index]}&rdquo;
+        </p>
+      </div>
+      <button
+        onClick={nextAffirmation}
+        className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-sage-600 hover:text-sage-700 transition"
+      >
+        <FaSyncAlt className={fading ? "animate-spin" : ""} /> New affirmation
+      </button>
     </div>
   );
 };

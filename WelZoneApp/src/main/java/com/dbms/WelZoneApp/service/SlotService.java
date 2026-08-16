@@ -2,6 +2,7 @@ package com.dbms.WelZoneApp.service;
 
 import com.dbms.WelZoneApp.model.Slot;
 import com.dbms.WelZoneApp.model.SlotWithCounselorDetails;
+import com.dbms.WelZoneApp.model.SlotWithUserDetails;
 import com.dbms.WelZoneApp.repository.SlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,26 @@ public class SlotService {
     // Find booked slots by user with end time greater than the current time
     public List<Slot> getBookedSlotsWithEndTimeByUser(Long userId, LocalDateTime currentTime) {
         return slotRepository.findBookedSlotsWithEndTimebyUser(userId, currentTime);
+    }
+
+    // Find booked slots for a user with counselor details
+    public List<SlotWithCounselorDetails> getBookedSlotsByUserWithCounselorDetails(Long userId, LocalDateTime currentTime) {
+        return slotRepository.findBookedSlotsByUserWithCounselorDetails(userId, currentTime);
+    }
+
+    // Find booked slots for a counselor with member details
+    public List<SlotWithUserDetails> getBookedSlotsByCounselorWithUserDetails(Long counselorId, LocalDateTime currentTime) {
+        return slotRepository.findBookedSlotsByCounselorWithUserDetails(counselorId, currentTime);
+    }
+
+    // Find all slots for a counselor with member details
+    public List<SlotWithUserDetails> getAllSlotsByCounselorWithUserDetails(Long counselorId) {
+        return slotRepository.findAllSlotsByCounselorWithUserDetails(counselorId);
+    }
+
+    // Delete a slot
+    public boolean deleteSlot(Long slotId) {
+        return slotRepository.deleteSlot(slotId);
     }
 
     // Book a slot
