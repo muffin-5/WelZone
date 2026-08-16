@@ -28,6 +28,12 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        // WebSocket handshake is authenticated on the STOMP CONNECT frame,
+        // so the SockJS handshake HTTP request itself is allowed through
+        if (uriStartsWith(request, "/chat-websocket")) {
+            return true;
+        }
+
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
             writeUnauthorized(response, "Missing or malformed Authorization header.");
@@ -48,6 +54,12 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
             writeUnauthorized(response, "Invalid or expired token.");
             return false;
         }
+    }
+
+    private boolean uriStartsWith(HttpServletRequest request, String prefix) {
+        String contextPath = request.getContextPath();
+        String uri = request.getRequestURI().substring(contextPath.length());
+        return uri.startsWith(prefix);
     }
 
     private boolean isPublicEndpoint(HttpServletRequest request) {

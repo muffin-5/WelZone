@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import DashboardUser from "./components/DashboardUser";
@@ -24,13 +24,13 @@ import MyCourses from "./components/MyCourses";
 import CalendarPage from "./components/CalendarPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-function App() {
+function AppContent() {
+  const location = useLocation();
   return (
-    <Router>
-      <div className="app">
-        {localStorage.getItem("Id") && <Header />}
-        <main className="flex-1">
-          <Routes>
+    <div className="app">
+      {localStorage.getItem("Id") && <Header />}
+      <main className="flex-1">
+        <Routes>
             {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/register" element={<Register />} />
@@ -177,8 +177,15 @@ function App() {
             />
           </Routes>
         </main>
-        <Footer />
+        {!location.pathname.startsWith("/chat") && <Footer />}
       </div>
+    );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

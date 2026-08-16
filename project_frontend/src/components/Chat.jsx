@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 import {
   FaPaperPlane,
   FaVideo,
@@ -7,6 +9,8 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import PageShell from "./PageShell";
+
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 const convertArrayToDate = (dateValue) => {
   if (typeof dateValue === "string") {
@@ -28,7 +32,96 @@ const Chat = () => {
   const [input, setInput] = useState("");
   const [loadingSessions, setLoadingSessions] = useState(true);
   const [sending, setSending] = useState(false);
+  const [otherTyping, setOtherTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const stompClientRef = useRef(null);
+  const subscriptionsRef = useRef([]);
+  const typingTimeoutRef = useRef(null);
+  const lastTypingSentRef = useRef(0);
+  const subscribeRef = useRef(null);
+
+  const getApiBase = () => API_BASE;
+
+  const getStompDestination = () => `${getApiBase().replace(/\/$/, "")}/chat-websocket`;
+
+  // Subscribe/unsubscribe to the message + typing topics for the active session
+  const subscribeToTopics = (client) => {
+    if (!selectedSession) return;
+
+    // Clean up previous subscriptions
+    subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
+    subscriptionsRef.current = [];
+
+    const sessionId = selectedSession.slotId;
+
+    const msgSub = client.subscribe(`/topic/messages/${sessionId}`, (frame) => {
+      try {
+        const msg = JSON.parse(frame.body);
+        setMessages((prev) =>
+          prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
+        );
+      } catch {
+        // ignore malformed frames
+      }
+    });
+
+    const typingSub = client.subscribe(`/topic/typing/${sessionId}`, (frame) => {
+      try {
+        const evt = JSON.parse(frame.body);
+        const isMine =
+          String(evt.senderType).toUpperCase() === myType &&
+          String(evt.senderId) === String(myId);
+        if (isMine || !evt.typing) {
+          setOtherTyping(false);
+          return;
+        }
+        setOtherTyping(true);
+        // Safety: hide the bubble even if a "stopped" event is missed
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = setTimeout(() => setOtherTyping(false), 4000);
+      } catch {
+        // ignore malformed frames
+      }
+    });
+
+    subscriptionsRef.current = [msgSub, typingSub];
+  };
+
+  // Keep the latest subscribeToTopics callable for the socket's onConnect/reconnect
+  subscribeRef.current = subscribeToTopics;
+
+  // Connect to the STOMP WebSocket once on mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const client = new Client({
+      webSocketFactory: () => new SockJS(getStompDestination()),
+      connectHeaders: { Authorization: `Bearer ${token}` },
+      reconnectDelay: 3000,
+      debug: () => {},
+      onConnect: () => subscribeRef.current(client),
+    });
+    client.activate();
+    stompClientRef.current = client;
+
+    return () => {
+      subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
+      subscriptionsRef.current = [];
+      clearTimeout(typingTimeoutRef.current);
+      client.deactivate();
+      stompClientRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Resubscribe whenever the selected session changes
+  useEffect(() => {
+    const client = stompClientRef.current;
+    if (client) subscribeToTopics(client);
+    setOtherTyping(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSession]);
 
   // Fetch list of sessions the user/counselor is part of
   useEffect(() => {
@@ -36,8 +129,8 @@ const Chat = () => {
       try {
         const endpoint =
           myType === "COUNSELOR"
-            ? `http://localhost:8080/slots/booked/${myId}`
-            : `http://localhost:8080/slots/bookedbyme/${myId}`;
+            ? `${getApiBase()}/slots/booked/${myId}`
+            : `${getApiBase()}/slots/bookedbyme/${myId}`;
         const res = await axios.get(endpoint);
         setSessions(Array.isArray(res.data) ? res.data : []);
       } catch {
@@ -49,13 +142,13 @@ const Chat = () => {
     fetchSessions();
   }, [myId, myType]);
 
-  // Fetch messages for selected session
+  // Fetch messages for selected session (initial load only; live updates arrive via WebSocket)
   useEffect(() => {
     if (!selectedSession) return;
     const fetchMessages = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/chat/messages/${selectedSession.slotId}`
+          `${getApiBase()}/chat/messages/${selectedSession.slotId}`
         );
         setMessages(Array.isArray(res.data) ? res.data : []);
       } catch {
@@ -63,13 +156,48 @@ const Chat = () => {
       }
     };
     fetchMessages();
-    const interval = setInterval(fetchMessages, 5000);
-    return () => clearInterval(interval);
   }, [selectedSession]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, otherTyping]);
+
+  const notifyTyping = (typing) => {
+    const client = stompClientRef.current;
+    if (!client || !selectedSession) return;
+    try {
+      client.publish({
+        destination: "/app/typing",
+        body: JSON.stringify({
+          sessionId: selectedSession.slotId,
+          senderId: Number(myId),
+          senderType: myType,
+          typing,
+        }),
+      });
+    } catch {
+      // socket not ready yet
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInput(value);
+
+    // Debounce: announce "typing" at most once per second while typing
+    const now = Date.now();
+    if (now - lastTypingSentRef.current > 1000) {
+      lastTypingSentRef.current = now;
+      notifyTyping(true);
+    }
+
+    // Stop announcing after the user pauses for ~1.5s
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      lastTypingSentRef.current = 0;
+      notifyTyping(false);
+    }, 1500);
+  };
 
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -77,15 +205,23 @@ const Chat = () => {
     const msg = input.trim();
     setInput("");
     setSending(true);
+
+    // Tell the other party we stopped typing
+    clearTimeout(typingTimeoutRef.current);
+    lastTypingSentRef.current = 0;
+    notifyTyping(false);
+
     try {
-      await axios.post("http://localhost:8080/chat/send", {
+      await axios.post(`${getApiBase()}/chat/send`, {
         sessionId: selectedSession.slotId,
         senderId: Number(myId),
         senderType: myType,
         message: msg,
       });
+      // New message is pushed back over the WebSocket; no refetch needed.
+      // Fallback refetch in case the socket is briefly unavailable.
       const res = await axios.get(
-        `http://localhost:8080/chat/messages/${selectedSession.slotId}`
+        `${getApiBase()}/chat/messages/${selectedSession.slotId}`
       );
       setMessages(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
@@ -211,7 +347,7 @@ const Chat = () => {
         </div>
 
         {/* Chat window */}
-        <div className="lg:col-span-2 welzone-card flex flex-col overflow-hidden h-[560px]">
+        <div className="lg:col-span-2 welzone-card flex flex-col overflow-hidden h-[calc(100dvh-11rem)] lg:h-[560px]">
           {!selectedSession ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
               <span className="w-20 h-20 rounded-3xl bg-sage-100 text-sage-500 flex items-center justify-center mb-4">
@@ -255,7 +391,7 @@ const Chat = () => {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-mist/60">
+              <div className="flex-1 overflow-y-auto px-3 py-4 space-y-3 md:p-5 md:space-y-4 bg-mist/60 overscroll-contain">
                 {messages.length === 0 ? (
                   <div className="h-full flex items-center justify-center">
                     <p className="text-sm text-stone text-center max-w-xs">
@@ -266,8 +402,8 @@ const Chat = () => {
                   grouped.map((item) => {
                     if (item.type === "divider") {
                       return (
-                        <div key={item.key} className="flex justify-center py-2">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone/70 bg-white px-3 py-1 rounded-full shadow-sm">
+                        <div key={item.key} className="flex justify-center py-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-stone/70 bg-white px-3 py-1 rounded-full shadow-sm md:text-[11px]">
                             {item.label}
                           </span>
                         </div>
@@ -281,24 +417,24 @@ const Chat = () => {
                     return (
                       <div
                         key={m.id}
-                        className={`flex items-end gap-2.5 ${isMine ? "justify-end" : "justify-start"}`}
+                        className={`flex items-end gap-2 md:gap-2.5 ${isMine ? "justify-end" : "justify-start"}`}
                       >
                         {/* Avatar on the opposite side */}
                         {!isMine && (
-                          <span className="w-8 h-8 rounded-full bg-sage-100 text-sage-700 flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
+                          <span className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-sage-100 text-sage-700 flex items-center justify-center text-xs md:text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
                             {senderInitial}
                           </span>
                         )}
 
-                        <div className={`flex flex-col max-w-[70%] ${isMine ? "items-end" : "items-start"}`}>
+                        <div className={`flex flex-col max-w-[75%] md:max-w-[70%] ${isMine ? "items-end" : "items-start"}`}>
                           {/* Sender name for the other party */}
                           {!isMine && (
-                            <span className="text-[11px] font-semibold text-stone/70 mb-1 ml-1">
+                            <span className="text-[10px] md:text-[11px] font-semibold text-stone/70 mb-0.5 ml-1.5 md:ml-1">
                               {otherName || "Counsellor"}
                             </span>
                           )}
                           <div
-                            className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words rounded-3xl shadow-sm ${
+                            className={`px-3 py-2 md:px-4 md:py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words rounded-2xl md:rounded-3xl shadow-sm ${
                               isMine
                                 ? "bg-sage-500 text-white rounded-br-md"
                                 : "bg-white text-cocoa rounded-bl-md border border-cream-200"
@@ -306,7 +442,7 @@ const Chat = () => {
                           >
                             {m.message}
                             <span
-                              className={`block text-[10px] mt-1.5 ${
+                              className={`block text-[10px] mt-1 ${
                                 isMine ? "text-sage-100/80 text-right" : "text-stone/60 text-right"
                               }`}
                             >
@@ -317,7 +453,7 @@ const Chat = () => {
 
                         {/* Avatar on my side */}
                         {isMine && (
-                          <span className="w-8 h-8 rounded-full bg-sage-500 text-white flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
+                          <span className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-sage-500 text-white flex items-center justify-center text-xs md:text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
                             {whoLogged === "counselor" ? "C" : "M"}
                           </span>
                         )}
@@ -325,24 +461,41 @@ const Chat = () => {
                     );
                   })
                 )}
+                {otherTyping && (
+                  <div className="flex items-end gap-2 md:gap-2.5 justify-start">
+                    <span className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-sage-100 text-sage-700 flex items-center justify-center text-xs md:text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
+                      {otherInitial}
+                    </span>
+                    <div className="flex flex-col items-start">
+                      <span className="text-[10px] md:text-[11px] font-semibold text-stone/70 mb-0.5 ml-1.5 md:ml-1">
+                        {otherName || "Counsellor"}
+                      </span>
+                      <div className="px-3 py-2.5 bg-white rounded-2xl rounded-bl-md border border-cream-200 shadow-sm flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-stone/40 animate-bounce [animation-delay:0ms]" />
+                        <span className="w-2 h-2 rounded-full bg-stone/40 animate-bounce [animation-delay:150ms]" />
+                        <span className="w-2 h-2 rounded-full bg-stone/40 animate-bounce [animation-delay:300ms]" />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
               {/* Input */}
               <form
                 onSubmit={sendMessage}
-                className="flex items-center gap-3 px-5 py-4 border-t border-cream-200 bg-cream-50"
+                className="flex items-center gap-2 md:gap-3 px-3 py-2.5 md:px-5 md:py-4 border-t border-cream-200 bg-cream-50"
               >
                 <input
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={handleInputChange}
                   placeholder="Type a message..."
                   className="welzone-input flex-1"
                 />
                 <button
                   type="submit"
                   disabled={sending || !input.trim()}
-                  className="welzone-btn-primary !px-5 !py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="welzone-btn-primary !px-4 !py-2.5 md:!px-5 md:!py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <FaPaperPlane />
                 </button>

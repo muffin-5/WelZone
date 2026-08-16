@@ -2,9 +2,13 @@ package com.dbms.WelZoneApp.repository;
 
 import com.dbms.WelZoneApp.model.ChatMessage;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -16,15 +20,22 @@ public class ChatMessageRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Save a chat message
-    public int save(ChatMessage chatMessage) {
+    // Save a chat message and return the persisted entity (with generated id)
+    public ChatMessage save(ChatMessage chatMessage) {
         String sql = "INSERT INTO chat_messages (session_id, sender_id, sender_type, message, timestamp) VALUES (?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql,
-                chatMessage.getSessionId(),
-                chatMessage.getSenderId(),
-                chatMessage.getSenderType(),
-                chatMessage.getMessage(),
-                chatMessage.getTimestamp());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setLong(1, chatMessage.getSessionId());
+            ps.setLong(2, chatMessage.getSenderId());
+            ps.setString(3, chatMessage.getSenderType());
+            ps.setString(4, chatMessage.getMessage());
+            ps.setObject(5, chatMessage.getTimestamp());
+            return ps;
+        }, keyHolder);
+        Number key = keyHolder.getKey();
+        chatMessage.setId(key != null ? key.longValue() : null);
+        return chatMessage;
     }
 
     // Get chat messages by session

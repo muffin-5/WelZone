@@ -14,9 +14,9 @@ public class ChatMessageService {
         this.chatMessageRepository = chatMessageRepository;
     }
 
-    // Save chat message
-    public void saveChatMessage(ChatMessage chatMessage) {
-        chatMessageRepository.save(chatMessage);
+    // Save chat message and return the persisted entity (with generated id + timestamp)
+    public ChatMessage saveChatMessage(ChatMessage chatMessage) {
+        return chatMessageRepository.save(chatMessage);
     }
 
     // Retrieve messages by session (slot)
