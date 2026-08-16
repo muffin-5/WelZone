@@ -243,11 +243,11 @@ const Chat = () => {
   const otherInitial = otherName ? otherName.charAt(0).toUpperCase() : "?";
 
   const formatTime = (ts) =>
-    ts ? new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+    ts ? new Date(ts.endsWith("Z") ? ts : `${ts}Z`).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
 
   const formatDay = (ts) => {
     if (!ts) return "";
-    const d = new Date(ts);
+    const d = new Date(ts.endsWith("Z") ? ts : `${ts}Z`);
     const today = new Date();
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);

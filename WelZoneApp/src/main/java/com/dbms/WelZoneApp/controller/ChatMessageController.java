@@ -5,6 +5,7 @@ import com.dbms.WelZoneApp.service.ChatMessageService;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class ChatMessageController {
     // Send a new chat message
     @PostMapping("/send")
     public void sendMessage(@RequestBody ChatMessage chatMessage) {
-        // Set the timestamp automatically
-        chatMessage.setTimestamp(LocalDateTime.now());
+        // Set the timestamp to UTC so clients can render it in their own zone
+        chatMessage.setTimestamp(LocalDateTime.now(Clock.systemUTC()));
         ChatMessage saved = chatMessageService.saveChatMessage(chatMessage);
         // Push the persisted message to all subscribers of this session in real time
         messagingTemplate.convertAndSend(

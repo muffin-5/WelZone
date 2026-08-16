@@ -8,6 +8,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Controller
@@ -26,7 +27,8 @@ public class ChatMessageWebSocketController {
     // everyone subscribed to /topic/messages/{sessionId}
     @MessageMapping("/sendMessage")
     public void sendMessage(@Payload ChatMessage chatMessage) {
-        chatMessage.setTimestamp(LocalDateTime.now());
+        // Set the timestamp to UTC so clients can render it in their own zone
+        chatMessage.setTimestamp(LocalDateTime.now(Clock.systemUTC()));
         ChatMessage saved = chatMessageService.saveChatMessage(chatMessage);
         messagingTemplate.convertAndSend(
                 "/topic/messages/" + saved.getSessionId(), saved);
