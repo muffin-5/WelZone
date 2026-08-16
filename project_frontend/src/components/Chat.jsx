@@ -99,6 +99,43 @@ const Chat = () => {
     ? convertArrayToDate(selectedSession.startTime)
     : null;
 
+  const otherName =
+    myType === "COUNSELOR"
+      ? selectedSession?.userName
+      : selectedSession?.counselorName;
+
+  const otherInitial = otherName ? otherName.charAt(0).toUpperCase() : "?";
+
+  const formatTime = (ts) =>
+    ts ? new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+
+  const formatDay = (ts) => {
+    if (!ts) return "";
+    const d = new Date(ts);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const sameDay = (a, b) =>
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate();
+    if (sameDay(d, today)) return "Today";
+    if (sameDay(d, yesterday)) return "Yesterday";
+    return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
+
+  // Insert day dividers between messages
+  const grouped = [];
+  let lastDay = null;
+  messages.forEach((m) => {
+    const day = m.timestamp ? new Date(m.timestamp).toDateString() : "";
+    if (day !== lastDay) {
+      grouped.push({ type: "divider", label: formatDay(m.timestamp), key: `div-${day}` });
+      lastDay = day;
+    }
+    grouped.push({ type: "msg", m });
+  });
+
   return (
     <PageShell
       eyebrow="Messaging"
@@ -218,7 +255,7 @@ const Chat = () => {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-white">
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-mist/60">
                 {messages.length === 0 ? (
                   <div className="h-full flex items-center justify-center">
                     <p className="text-sm text-stone text-center max-w-xs">
@@ -226,36 +263,64 @@ const Chat = () => {
                     </p>
                   </div>
                 ) : (
-                  messages.map((m, index) => {
-                    const isMine = String(m.senderId) === String(myId);
+                  grouped.map((item) => {
+                    if (item.type === "divider") {
+                      return (
+                        <div key={item.key} className="flex justify-center py-2">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-stone/70 bg-white px-3 py-1 rounded-full shadow-sm">
+                            {item.label}
+                          </span>
+                        </div>
+                      );
+                    }
+                    const m = item.m;
+                    const isMine =
+                      String(m.senderType).toUpperCase() === myType &&
+                      String(m.senderId) === String(myId);
+                    const senderInitial = isMine ? null : otherInitial;
                     return (
                       <div
-                        key={index}
-                        className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+                        key={m.id}
+                        className={`flex items-end gap-2.5 ${isMine ? "justify-end" : "justify-start"}`}
                       >
-                        <div
-                          className={`max-w-[75%] rounded-3xl px-4 py-3 text-sm ${
-                            isMine
-                              ? "bg-sage-500 text-white rounded-br-lg"
-                              : "bg-cream-100 text-cocoa rounded-bl-lg"
-                          }`}
-                        >
-                          <p className="whitespace-pre-wrap break-words">
-                            {m.message}
-                          </p>
-                          <p
-                            className={`text-[10px] mt-1 ${
-                              isMine ? "text-sage-100" : "text-stone"
+                        {/* Avatar on the opposite side */}
+                        {!isMine && (
+                          <span className="w-8 h-8 rounded-full bg-sage-100 text-sage-700 flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
+                            {senderInitial}
+                          </span>
+                        )}
+
+                        <div className={`flex flex-col max-w-[70%] ${isMine ? "items-end" : "items-start"}`}>
+                          {/* Sender name for the other party */}
+                          {!isMine && (
+                            <span className="text-[11px] font-semibold text-stone/70 mb-1 ml-1">
+                              {otherName || "Counsellor"}
+                            </span>
+                          )}
+                          <div
+                            className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words rounded-3xl shadow-sm ${
+                              isMine
+                                ? "bg-sage-500 text-white rounded-br-md"
+                                : "bg-white text-cocoa rounded-bl-md border border-cream-200"
                             }`}
                           >
-                            {m.timestamp
-                              ? new Date(m.timestamp).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })
-                              : ""}
-                          </p>
+                            {m.message}
+                            <span
+                              className={`block text-[10px] mt-1.5 ${
+                                isMine ? "text-sage-100/80 text-right" : "text-stone/60 text-right"
+                              }`}
+                            >
+                              {formatTime(m.timestamp)}
+                            </span>
+                          </div>
                         </div>
+
+                        {/* Avatar on my side */}
+                        {isMine && (
+                          <span className="w-8 h-8 rounded-full bg-sage-500 text-white flex items-center justify-center text-sm font-bold shrink-0 ring-2 ring-white shadow-sm">
+                            {whoLogged === "counselor" ? "C" : "M"}
+                          </span>
+                        )}
                       </div>
                     );
                   })
