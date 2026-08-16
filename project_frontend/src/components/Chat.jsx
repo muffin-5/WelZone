@@ -46,7 +46,7 @@ const Chat = () => {
 
   // Subscribe/unsubscribe to the message + typing topics for the active session
   const subscribeToTopics = (client) => {
-    if (!selectedSession) return;
+    if (!selectedSession || !client?.connected) return;
 
     // Clean up previous subscriptions
     subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
@@ -164,7 +164,7 @@ const Chat = () => {
 
   const notifyTyping = (typing) => {
     const client = stompClientRef.current;
-    if (!client || !selectedSession) return;
+    if (!client?.connected || !selectedSession) return;
     try {
       client.publish({
         destination: "/app/typing",
