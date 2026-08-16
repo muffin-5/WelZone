@@ -1,4 +1,4 @@
-# WelZone — Free Deployment Guide
+# WelZone – Free Deployment Guide
 
 Stack: **Vercel** (frontend) + **Render** (Spring Boot backend, Docker) + **Aiven** (free MySQL 8).
 
@@ -14,11 +14,11 @@ Everything needed is in this repo:
 | `project_frontend/.env.example` | Frontend env var template |
 
 > Important: `deploy/schema.sql` + `deploy/seed.sql` are the CORRECT versions. The old
-> `WelZoneApp/mysql/*.sql` files are outdated (wrong table/column names) — do not use them.
+> `WelZoneApp/mysql/*.sql` files are outdated (wrong table/column names) – do not use them.
 
 ---
 
-## Step 1 — Push the deploy changes
+## Step 1 – Push the deploy changes
 
 Commit and push the new files (schema, seed, Dockerfile, config changes):
 
@@ -30,7 +30,7 @@ git push origin main
 
 ---
 
-## Step 2 — Create the free MySQL database (Aiven)
+## Step 2 – Create the free MySQL database (Aiven)
 
 1. Go to https://console.aiven.io/ and sign up.
 2. **Create a new service** → **MySQL** → pick the free **Hobbyist** plan (free forever, 5 GB).
@@ -50,16 +50,16 @@ mysql --ssl-mode=REQUIRED -h HOST -P PORT -u USER -p < deploy/schema.sql
 mysql --ssl-mode=REQUIRED -h HOST -P PORT -u USER -p < deploy/seed.sql
 ```
 
-(`schema.sql` creates the `welzoneapp` database itself — if you instead use Aiven's `defaultdb`,
+(`schema.sql` creates the `welzoneapp` database itself – if you instead use Aiven's `defaultdb`,
 edit `schema.sql` and remove the `CREATE DATABASE` + `USE` lines.)
 
 ---
 
-## Step 3 — Deploy the backend (Render)
+## Step 3 – Deploy the backend (Render)
 
 1. Go to https://render.com/ and sign up.
 2. **New** → **Web Service** → connect the `muffin-5/WelZone` GitHub repo.
-3. Render detects the project — configure:
+3. Render detects the project – configure:
    - **Name**: `welzone-backend`
    - **Root Directory**: `WelZoneApp`
    - **Environment**: `Docker`
@@ -80,7 +80,7 @@ edit `schema.sql` and remove the `CREATE DATABASE` + `USE` lines.)
 
 ---
 
-## Step 4 — Deploy the frontend (Vercel)
+## Step 4 – Deploy the frontend (Vercel)
 
 1. Go to https://vercel.com/ and sign up (or continue with GitHub).
 2. **Add New Project** → import `muffin-5/WelZone`.
@@ -96,12 +96,12 @@ edit `schema.sql` and remove the `CREATE DATABASE` + `USE` lines.)
 
 ---
 
-## Step 5 — Verify
+## Step 5 – Verify
 
 - Open your Vercel URL → you should see the landing page.
 - Log in as a user: `alice` / `password123` (or register a new account).
 - Log in as a counselor: `dr_maya` / `password123`.
-- Book a session, chat, etc. — all traffic goes to your Render backend + Aiven DB.
+- Book a session, chat, etc. – all traffic goes to your Render backend + Aiven DB.
 
 ---
 
